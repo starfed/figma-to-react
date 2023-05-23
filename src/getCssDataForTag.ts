@@ -74,7 +74,9 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
         properties.push({ name: 'flex-direction', value: node.layoutMode === 'HORIZONTAL' ? 'row' : 'column' })
         properties.push({ name: 'justify-content', value: justifyContentCssValues[node.primaryAxisAlignItems] })
         properties.push({ name: 'align-items', value: alignItemsCssValues[node.counterAxisAlignItems] })
-
+        if (node.layoutGrow) {
+          properties.push({ name: 'flex-grow', value: node.layoutGrow })
+        }
         if (node.paddingTop === node.paddingBottom && node.paddingTop === node.paddingLeft && node.paddingTop === node.paddingRight) {
           if (node.paddingTop > 0) {
             properties.push({ name: 'padding', value: `${buildSizeStringByUnit(node.paddingTop, unitType)}` })
@@ -185,7 +187,9 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
     let className = node.name
 
     if (isImageNode(node)) {
-      className = 'img' + textCount.count
+      properties.push({ name: 'background-image', value: `url('@/assets/imgs/${node.name}.png')` })
+      properties.push({ name: 'background-size', value: 'cover' })
+      className = node.parent?.name + 'img' + textCount.count
       textCount.increment()
     }
 

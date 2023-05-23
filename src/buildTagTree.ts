@@ -10,6 +10,7 @@ type Property = {
 
 export type Tag = {
   name: string
+  isInstance?: boolean
   isText: boolean
   textCharacters: string | null
   isImg: boolean
@@ -28,9 +29,9 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
   const isImg = isImageNode(node)
   const properties: Property[] = []
 
-  if (isImg) {
-    properties.push({ name: 'src', value: '' })
-  }
+  // if (isImg) {
+  //   properties.push({ name: 'src', value: '' })
+  // }
 
   const childTags: Tag[] = []
   if ('children' in node && !isImg) {
@@ -45,6 +46,7 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
   const tag: Tag = {
     name: isImg ? 'img' : node.name,
     isText: node.type === 'TEXT',
+    isInstance: node.type === 'INSTANCE',
     textCharacters: node.type === 'TEXT' ? node.characters : null,
     isImg,
     css: getCssDataForTag(node, unitType, textCount),

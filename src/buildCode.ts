@@ -33,9 +33,9 @@ function guessTagName(name: string) {
 
 function getTagName(tag: Tag, cssStyle: CssStyle) {
   if (cssStyle === 'css' && !tag.isComponent) {
-    if (tag.isImg) {
-      return 'img'
-    }
+    // if (tag.isImg) {
+    //   return 'img'
+    // }
     if (tag.isText) {
       return 'p'
     }
@@ -46,10 +46,11 @@ function getTagName(tag: Tag, cssStyle: CssStyle) {
 
 function getClassName(tag: Tag, cssStyle: CssStyle) {
   if (cssStyle === 'css' && !tag.isComponent) {
-    if (tag.isImg) {
-      return ''
-    }
-    return ` className="${buildClassName(tag.css.className)}"`
+    // if (tag.isImg) {
+    //   return ''
+    // }
+    if (/[.\-_]/.test(tag.css.className)) return ` className={styles[${buildClassName(tag.css.className)}]}`
+    return ` className={styles.${buildClassName(tag.css.className)}}`
   }
   return ''
 }
@@ -79,17 +80,40 @@ function buildJsxString(tag: Tag, cssStyle: CssStyle, level: number) {
   const className = getClassName(tag, cssStyle)
   const properties = tag.properties.map(buildPropertyString).join('')
 
-  const openingTag = `${spaceString}<${tagName}${className}${properties}${hasChildren || tag.isText ? `` : ' /'}>`
-  const childTags = buildChildTagsString(tag, cssStyle, level)
-  const closingTag = hasChildren || tag.isText ? `${!tag.isText ? '\n' + spaceString : ''}</${tagName}>` : ''
+  if (tag.isInstance) {
+    return `${spaceString}<${capitalizeFirstLetter(tag.name)} />`
+  } else {
+    const openingTag = `${spaceString}<${tagName}${className}${properties}${hasChildren || tag.isText ? `` : ' /'}>`
+    const childTags = buildChildTagsString(tag, cssStyle, level)
+    const closingTag = hasChildren || tag.isText ? `${!tag.isText ? '\n' + spaceString : ''}</${tagName}>` : ''
 
-  return openingTag + childTags + closingTag
+    return openingTag + childTags + closingTag
+  }
+}
+
+function buildImportString(tag: Tag): string {
+  if (!tag) {
+    return ''
+  }
+  let p = tag.isInstance ? `import ${capitalizeFirstLetter(tag.name)} from '@/components/${tag.name}'\n` : ''
+  if (tag.children) {
+    tag.children.forEach((v) => {
+      const s = buildImportString(v)
+      if (!p.includes(s)) p += s
+    })
+  }
+  return p
 }
 
 export function buildCode(tag: Tag, css: CssStyle): string {
-  return `const ${capitalizeFirstLetter(tag.name.replace(/\s/g, ''))}: React.VFC = () => {
+  const componentName = capitalizeFirstLetter(tag.name.replace(/\s/g, ''))
+  return `import styles from './index.css';
+  ${buildImportString(tag)}
+  const ${componentName}: React.FC = () => {
   return (
 ${buildJsxString(tag, css, 0)}
   )
-}`
+  
+}
+export default ${componentName}`
 }

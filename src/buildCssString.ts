@@ -5,6 +5,7 @@ import { buildClassName } from './utils/cssUtils'
 export type CssStyle = 'css' | 'styled-components'
 
 function buildArray(tag: Tag, arr: CSSData[]): CSSData[] {
+  if (tag.isInstance) return arr
   if (!tag.isComponent) {
     arr.push(tag.css)
   }

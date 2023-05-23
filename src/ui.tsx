@@ -52,14 +52,28 @@ const unitTypes: { value: UnitType; label: string }[] = [
 
 const App: React.VFC = () => {
   const [code, setCode] = React.useState('')
+
+  const [componentCode, setComponentCode] = React.useState('')
+  const [cssCode, setCssCode] = React.useState('')
   const [selectedCssStyle, setCssStyle] = React.useState<CssStyle>('css')
   const [selectedUnitType, setUnitType] = React.useState<UnitType>('px')
   const [userComponentSettings, setUserComponentSettings] = React.useState<UserComponentSetting[]>([])
-  const textRef = React.useRef<HTMLTextAreaElement>(null)
+  const textComponentRef = React.useRef<HTMLTextAreaElement>(null)
+  const textCssRef = React.useRef<HTMLTextAreaElement>(null)
 
-  const copyToClipboard = () => {
-    if (textRef.current) {
-      textRef.current.select()
+  const copyComponentToClipboard = () => {
+    if (textComponentRef.current) {
+      textComponentRef.current.select()
+      document.execCommand('copy')
+
+      const msg: messageTypes = { type: 'notify-copy-success' }
+      parent.postMessage(msg, '*')
+    }
+  }
+
+  const copyCssToClipboard = () => {
+    if (textCssRef.current) {
+      textCssRef.current.select()
       document.execCommand('copy')
 
       const msg: messageTypes = { type: 'notify-copy-success' }
@@ -97,7 +111,8 @@ const App: React.VFC = () => {
   }
 
   const syntaxHighlightedCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(code)), [code])
-
+  const syntaxHighlightedComponentCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(componentCode)), [componentCode])
+  const syntaxHighlightedCssCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(cssCode)), [cssCode])
   // set initial values taken from figma storage
   React.useEffect(() => {
     onmessage = (event) => {
@@ -105,6 +120,8 @@ const App: React.VFC = () => {
       setUnitType(event.data.pluginMessage.unitType)
       const codeStr = event.data.pluginMessage.generatedCodeStr + '\n\n' + event.data.pluginMessage.cssString
       setCode(codeStr)
+      setComponentCode(event.data.pluginMessage.generatedCodeStr)
+      setCssCode(event.data.pluginMessage.cssString)
       setUserComponentSettings(event.data.pluginMessage.userComponentSettings)
     }
   }, [])
@@ -112,14 +129,29 @@ const App: React.VFC = () => {
   return (
     <div>
       <div className={styles.code}>
-        <textarea className={styles.textareaForClipboard} ref={textRef} value={code} readOnly />
-        <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedCode }} />
+        <textarea className={styles.textareaForClipboard} ref={textComponentRef} value={componentCode} readOnly />
+
+        <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedComponentCode }} />
 
         <Spacer axis="vertical" size={12} />
 
         <div className={styles.buttonLayout}>
-          <button className={styles.copyButton} onClick={copyToClipboard}>
-            Copy to clipboard
+          <button className={styles.copyButton} onClick={copyComponentToClipboard}>
+            Copy Component to clipboard
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.code}>
+        <textarea className={styles.textareaForClipboard} ref={textCssRef} value={cssCode} readOnly />
+
+        <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedCssCode }} />
+
+        <Spacer axis="vertical" size={12} />
+
+        <div className={styles.buttonLayout}>
+          <button className={styles.copyButton} onClick={copyCssToClipboard}>
+            Copy Css to clipboard
           </button>
         </div>
       </div>
@@ -129,14 +161,14 @@ const App: React.VFC = () => {
 
         <Spacer axis="vertical" size={12} />
 
-        <div className={styles.optionList}>
+        {/* <div className={styles.optionList}>
           {cssStyles.map((style) => (
             <div key={style.value} className={styles.option}>
               <input type="radio" name="css-style" id={style.value} value={style.value} checked={selectedCssStyle === style.value} onChange={notifyChangeCssStyle} />
               <label htmlFor={style.value}>{style.label}</label>
             </div>
           ))}
-        </div>
+        </div> */}
 
         <Spacer axis="vertical" size={12} />
 
