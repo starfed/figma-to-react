@@ -77,6 +77,15 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
         if (node.layoutGrow) {
           properties.push({ name: 'flex-grow', value: node.layoutGrow })
         }
+        const mainKey = node.layoutMode === 'HORIZONTAL' ? 'width' : 'height'
+        const subKey = mainKey === 'width' ? 'height' : 'width'
+        if (node.primaryAxisSizingMode === 'FIXED') {
+          properties.push({ name: mainKey, value: Math.floor(node[mainKey]) + 'px' })
+        }
+
+        if (node.counterAxisSizingMode === 'FIXED') {
+          properties.push({ name: subKey, value: Math.floor(node[subKey]) + 'px' })
+        }
         if (node.paddingTop === node.paddingBottom && node.paddingTop === node.paddingLeft && node.paddingTop === node.paddingRight) {
           if (node.paddingTop > 0) {
             properties.push({ name: 'padding', value: `${buildSizeStringByUnit(node.paddingTop, unitType)}` })

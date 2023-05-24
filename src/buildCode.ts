@@ -1,6 +1,6 @@
 import { capitalizeFirstLetter } from './utils/stringUtils'
 import { Tag } from './buildTagTree'
-import { buildClassName } from './utils/cssUtils'
+import { buildClassName, specialLetterReg } from './utils/cssUtils'
 
 type CssStyle = 'css' | 'styled-components'
 
@@ -106,7 +106,7 @@ function buildImportString(tag: Tag): string {
 }
 
 export function buildCode(tag: Tag, css: CssStyle): string {
-  const componentName = capitalizeFirstLetter(tag.name.replace(/\s/g, ''))
+  const componentName = capitalizeFirstLetter(tag.name.replace(specialLetterReg, ''))
   return `import styles from './index.css';
   ${buildImportString(tag)}
   const ${componentName}: React.FC = () => {
