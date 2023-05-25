@@ -76,7 +76,7 @@ function buildJsxString(tag: Tag, cssStyle: CssStyle, level: number) {
   const spaceString = buildSpaces(4, level)
   const hasChildren = tag.children.length > 0
 
-  const tagName = getTagName(tag, cssStyle)
+  const tagName = getTagName(tag, cssStyle).replace(specialLetterReg, '')
   const className = getClassName(tag, cssStyle)
   const properties = tag.properties.map(buildPropertyString).join('')
 
@@ -95,7 +95,8 @@ function buildImportString(tag: Tag): string {
   if (!tag) {
     return ''
   }
-  let p = tag.isInstance ? `import ${capitalizeFirstLetter(tag.name)} from '@/components/${tag.name}'\n` : ''
+  const name = tag.name
+  let p = tag.isInstance ? `import ${capitalizeFirstLetter(name)} from '@/components/${name}'\n` : ''
   if (tag.children) {
     tag.children.forEach((v) => {
       const s = buildImportString(v)
@@ -106,7 +107,7 @@ function buildImportString(tag: Tag): string {
 }
 
 export function buildCode(tag: Tag, css: CssStyle): string {
-  const componentName = capitalizeFirstLetter(tag.name.replace(specialLetterReg, ''))
+  const componentName = capitalizeFirstLetter(tag.name)
   return `import styles from './index.css';
   ${buildImportString(tag)}
   const ${componentName}: React.FC = () => {

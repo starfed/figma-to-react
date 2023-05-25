@@ -1,5 +1,6 @@
 import { UnitType } from './buildSizeStringByUnit'
 import { CSSData, getCssDataForTag, TextCount } from './getCssDataForTag'
+import { specialLetterReg } from './utils/cssUtils'
 import { isImageNode } from './utils/isImageNode'
 
 type Property = {
@@ -44,7 +45,7 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
   }
 
   const tag: Tag = {
-    name: isImg ? 'img' : node.name,
+    name: isImg ? 'img' : node.name.replace(specialLetterReg, ''),
     isText: node.type === 'TEXT',
     isInstance: node.type === 'INSTANCE',
     textCharacters: node.type === 'TEXT' ? node.characters : null,

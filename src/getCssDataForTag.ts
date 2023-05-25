@@ -30,7 +30,8 @@ const justifyContentCssValues = {
 const alignItemsCssValues = {
   MIN: 'flex-start',
   MAX: 'flex-end',
-  CENTER: 'center'
+  CENTER: 'center',
+  BASELINE: 'flex-base'
 }
 
 const textAlignCssValues = {
@@ -54,6 +55,12 @@ const textDecorationCssValues = {
 export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount: TextCount): CSSData {
   const properties: CSSData['properties'] = []
 
+  // absolute positon
+  if (node.visible && 'layoutPositioning' in node && node.layoutPositioning === 'ABSOLUTE') {
+    properties.push({ name: 'position', value: 'absolute' })
+    properties.push({ name: 'left', value: node.x + 'px' })
+    properties.push({ name: 'top', value: node.y + 'px' })
+  }
   // skip vector since it's often displayed as an img tag
   if (node.visible && node.type !== 'VECTOR') {
     if ('opacity' in node && (node?.opacity || 1) < 1) {
@@ -117,7 +124,10 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
 
       if ((node.strokes as Paint[]).length > 0) {
         const paint = (node.strokes as Paint[])[0]
-        properties.push({ name: 'border', value: `${buildSizeStringByUnit(node.strokeWeight, unitType)} solid ${buildColorString(paint)}` })
+        properties.push({
+          name: 'border',
+          value: `${buildSizeStringByUnit(typeof node.strokeWeight === 'number' ? node.strokeWeight : 0, unitType)} solid ${buildColorString(paint)}`
+        })
       }
     }
 
@@ -137,7 +147,10 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
 
       if ((node.strokes as Paint[]).length > 0) {
         const paint = (node.strokes as Paint[])[0]
-        properties.push({ name: 'border', value: `${buildSizeStringByUnit(node.strokeWeight, unitType)} solid ${buildColorString(paint)}` })
+        properties.push({
+          name: 'border',
+          value: `${buildSizeStringByUnit(typeof node.strokeWeight === 'number' ? node.strokeWeight : 0, unitType)} solid ${buildColorString(paint)}`
+        })
       }
     }
 
@@ -182,7 +195,10 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
 
       if ((node.strokes as Paint[]).length > 0) {
         const paint = (node.strokes as Paint[])[0]
-        properties.push({ name: 'border', value: `${buildSizeStringByUnit(node.strokeWeight, unitType)} solid ${buildColorString(paint)}` })
+        properties.push({
+          name: 'border',
+          value: `${buildSizeStringByUnit(typeof node.strokeWeight === 'number' ? node.strokeWeight : 0, unitType)} solid ${buildColorString(paint)}`
+        })
       }
     }
 
