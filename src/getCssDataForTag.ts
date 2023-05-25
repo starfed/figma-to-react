@@ -52,11 +52,27 @@ const textDecorationCssValues = {
   STRIKETHROUGH: 'line-through'
 }
 
+const isAbsoluteNode = (node: SceneNode) => {
+  return node.visible && 'layoutPositioning' in node && node.layoutPositioning === 'ABSOLUTE'
+}
+
+function childrenHasAbsolute(p: SceneNode) {
+  if ('children' in p) {
+    const children = p.children
+    if (Array.isArray(children) && children.length > 0) {
+      return children.filter((v) => v)
+    }
+  }
+  return false
+}
+
 export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount: TextCount): CSSData {
   const properties: CSSData['properties'] = []
-
+  if (childrenHasAbsolute(node)) {
+    properties.push({ name: 'position', value: 'relative' })
+  }
   // absolute positon
-  if (node.visible && 'layoutPositioning' in node && node.layoutPositioning === 'ABSOLUTE') {
+  if (isAbsoluteNode(node)) {
     properties.push({ name: 'position', value: 'absolute' })
     properties.push({ name: 'left', value: node.x + 'px' })
     properties.push({ name: 'top', value: node.y + 'px' })
