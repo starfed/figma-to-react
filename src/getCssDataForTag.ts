@@ -135,7 +135,7 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
 
       if ((node.fills as Paint[]).length > 0 && (node.fills as Paint[])[0].type !== 'IMAGE') {
         const paint = (node.fills as Paint[])[0]
-        properties.push({ name: 'background-color', value: buildColorString(paint) })
+        if (paint.visible) properties.push({ name: 'background-color', value: buildColorString(paint) })
       }
 
       if ((node.strokes as Paint[]).length > 0) {
