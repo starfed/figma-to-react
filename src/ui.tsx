@@ -7,7 +7,7 @@ import styles from './ui.css'
 import Spacer from './ui/Spacer'
 import UserComponentSettingList from './ui/UserComponentSettingList'
 import { UserComponentSetting } from './userComponentSetting'
-
+//import { saveAs } from 'file-saver'
 function escapeHtml(str: string) {
   str = str.replace(/&/g, '&amp;')
   str = str.replace(/</g, '&lt;')
@@ -44,6 +44,11 @@ const cssStyles: { value: CssStyle; label: string }[] = [
   { value: 'styled-components', label: 'styled-components' }
 ]
 
+const IdentifyComponent = [
+  { value: 1, label: '识别子节点是否为组件' },
+  { value: 0, label: '不识别子节点是否为组件' }
+]
+
 const unitTypes: { value: UnitType; label: string }[] = [
   { value: 'px', label: 'px' },
   { value: 'rem', label: 'rem' },
@@ -56,6 +61,7 @@ const App: React.VFC = () => {
   const [componentCode, setComponentCode] = React.useState('')
   const [cssCode, setCssCode] = React.useState('')
   const [selectedCssStyle, setCssStyle] = React.useState<CssStyle>('css')
+  const [selectedIdentifyComponent, setIdentifyComponent] = React.useState(1)
   const [selectedUnitType, setUnitType] = React.useState<UnitType>('px')
   const [userComponentSettings, setUserComponentSettings] = React.useState<UserComponentSetting[]>([])
   const textComponentRef = React.useRef<HTMLTextAreaElement>(null)
@@ -71,6 +77,11 @@ const App: React.VFC = () => {
     }
   }
 
+  const downloadFile = () => {
+    const blob = new Blob(['Hello, world!'], { type: 'text/plain;charset=utf-8' })
+    //saveAs(blob, 'hello world.txt')
+  }
+
   const copyCssToClipboard = () => {
     if (textCssRef.current) {
       textCssRef.current.select()
@@ -83,6 +94,11 @@ const App: React.VFC = () => {
 
   const notifyChangeCssStyle = (event: React.ChangeEvent<HTMLInputElement>) => {
     const msg: messageTypes = { type: 'new-css-style-set', cssStyle: event.target.value as CssStyle }
+    parent.postMessage({ pluginMessage: msg }, '*')
+  }
+
+  const notifyChangeIdentifyComponent = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const msg: messageTypes = { type: 'new-identify-component-set', identify: event.target.value }
     parent.postMessage({ pluginMessage: msg }, '*')
   }
 
@@ -168,28 +184,39 @@ const App: React.VFC = () => {
               <label htmlFor={style.value}>{style.label}</label>
             </div>
           ))}
+          
         </div> */}
 
-        <Spacer axis="vertical" size={12} />
-
         <div className={styles.optionList}>
-          {unitTypes.map((unitType) => (
-            <div key={unitType.value} className={styles.option}>
-              <input type="radio" name="unit-type" id={unitType.value} value={unitType.value} checked={selectedUnitType === unitType.value} onChange={notifyChangeUnitType} />
-              <label htmlFor={unitType.value}>{unitType.label}</label>
+          {IdentifyComponent.map((v) => (
+            <div key={v.value} className={styles.option}>
+              <input type="radio" name="css-style" id={String(v.value)} value={v.value} checked={selectedIdentifyComponent === v.value} onChange={notifyChangeIdentifyComponent} />
+              <label htmlFor={String(v.value)}>{v.label}</label>
             </div>
           ))}
         </div>
 
         <Spacer axis="vertical" size={12} />
 
-        <UserComponentSettingList
+        {/* <div className={styles.optionList}>
+          {unitTypes.map((unitType) => (
+            <div key={unitType.value} className={styles.option}>
+              <input type="radio" name="unit-type" id={unitType.value} value={unitType.value} checked={selectedUnitType === unitType.value} onChange={notifyChangeUnitType} />
+              <label htmlFor={unitType.value}>{unitType.label}</label>
+            </div>
+          ))}
+        </div> */}
+
+        <Spacer axis="vertical" size={12} />
+
+        {/* <UserComponentSettingList
           settings={userComponentSettings}
           onAdd={onAddUserComponentSetting}
           onDelete={onDeleteUserComponentSetting}
           onUpdate={onUpdateUserComponentSetting}
-        />
+        /> */}
       </div>
+      <div onClick={() => downloadFile()}>test download</div>
     </div>
   )
 }

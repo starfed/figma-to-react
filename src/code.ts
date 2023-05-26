@@ -12,7 +12,7 @@ figma.showUI(__html__, { width: 680, height: 680 })
 
 const selectedNodes = figma.currentPage.selection
 
-async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType?: UnitType }) {
+async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType?: UnitType; identifyComponent?: string }) {
   console.log(node)
   let cssStyle = config.cssStyle
   if (!cssStyle) {
@@ -66,6 +66,11 @@ figma.ui.onmessage = (msg: messageTypes) => {
   if (msg.type === 'new-css-style-set') {
     figma.clientStorage.setAsync(STORAGE_KEYS.CSS_STYLE_KEY, msg.cssStyle)
     generate(selectedNodes[0], { cssStyle: msg.cssStyle })
+  }
+
+  if (msg.type === 'new-identify-component-set') {
+    console.log(msg.identify)
+    generate(selectedNodes[0], { identifyComponent: msg.identify })
   }
   if (msg.type === 'new-unit-type-set') {
     figma.clientStorage.setAsync(STORAGE_KEYS.UNIT_TYPE_KEY, msg.unitType)

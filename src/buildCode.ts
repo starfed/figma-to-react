@@ -99,8 +99,13 @@ function buildImportString(tag: Tag): string {
   let p = tag.isInstance ? `import ${capitalizeFirstLetter(name)} from '@/components/${name}'\n` : ''
   if (tag.children) {
     tag.children.forEach((v) => {
-      const s = buildImportString(v)
-      if (!p.includes(s)) p += s
+      if (!v.isInstance) {
+        const s = buildImportString(v)
+        if (!p.includes(s)) p += s
+      } else {
+        const name = v.name
+        p += `import ${capitalizeFirstLetter(name)} from '@/components/${name}'\n`
+      }
     })
   }
   return p

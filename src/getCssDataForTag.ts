@@ -60,7 +60,7 @@ function childrenHasAbsolute(p: SceneNode) {
   if ('children' in p) {
     const children = p.children
     if (Array.isArray(children) && children.length > 0) {
-      return children.filter((v) => v)
+      return children.filter((v) => isAbsoluteNode(v)).length > 0
     }
   }
   return false
