@@ -2,7 +2,7 @@ import { STORAGE_KEYS } from './storageKeys'
 import { messageTypes } from './messagesTypes'
 import { UnitType } from './buildSizeStringByUnit'
 import { modifyTreeForComponent } from './modifyTreeForComponent'
-import { buildCode } from './buildCode'
+import { buildCode, IdentifyComponentType } from './buildCode'
 import { buildTagTree } from './buildTagTree'
 import { buildCssString, CssStyle } from './buildCssString'
 import { UserComponentSetting } from './userComponentSetting'
@@ -12,8 +12,8 @@ figma.showUI(__html__, { width: 680, height: 680 })
 
 const selectedNodes = figma.currentPage.selection
 
-async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType?: UnitType; identifyComponent?: string }) {
-  console.log(node)
+async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType?: UnitType; identifyComponent?: IdentifyComponentType }) {
+  console.log(node, config.identifyComponent)
   let cssStyle = config.cssStyle
   if (!cssStyle) {
     cssStyle = await figma.clientStorage.getAsync(STORAGE_KEYS.CSS_STYLE_KEY)
@@ -21,6 +21,10 @@ async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType
     if (!cssStyle) {
       cssStyle = 'css'
     }
+  }
+
+  if (!config.identifyComponent) {
+    config.identifyComponent = IdentifyComponentType.IdentifyComponent
   }
 
   let unitType = config.unitType
@@ -36,7 +40,7 @@ async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType
 
   const textCount = new TextCount()
 
-  const originalTagTree = buildTagTree(node, unitType, textCount)
+  const originalTagTree = buildTagTree(node, unitType, textCount, config.identifyComponent)
   if (originalTagTree === null) {
     figma.notify('Please select a visible node')
     return
@@ -70,7 +74,7 @@ figma.ui.onmessage = (msg: messageTypes) => {
 
   if (msg.type === 'new-identify-component-set') {
     console.log(msg.identify)
-    generate(selectedNodes[0], { identifyComponent: msg.identify })
+    generate(selectedNodes[0], { identifyComponent: msg.identify as IdentifyComponentType })
   }
   if (msg.type === 'new-unit-type-set') {
     figma.clientStorage.setAsync(STORAGE_KEYS.UNIT_TYPE_KEY, msg.unitType)

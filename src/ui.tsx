@@ -3,6 +3,7 @@ import * as ReactDom from 'react-dom'
 import { CssStyle } from './buildCssString'
 import { UnitType } from './buildSizeStringByUnit'
 import { messageTypes } from './messagesTypes'
+import { IdentifyComponentType } from './buildCode'
 import styles from './ui.css'
 import Spacer from './ui/Spacer'
 import UserComponentSettingList from './ui/UserComponentSettingList'
@@ -45,8 +46,8 @@ const cssStyles: { value: CssStyle; label: string }[] = [
 ]
 
 const IdentifyComponent = [
-  { value: 1, label: '识别子节点是否为组件' },
-  { value: 0, label: '不识别子节点是否为组件' }
+  { value: IdentifyComponentType.IdentifyComponent, label: '识别子节点是否为组件' },
+  { value: IdentifyComponentType.IgnoreComponent, label: '不识别子节点是否为组件' }
 ]
 
 const unitTypes: { value: UnitType; label: string }[] = [
@@ -61,7 +62,7 @@ const App: React.VFC = () => {
   const [componentCode, setComponentCode] = React.useState('')
   const [cssCode, setCssCode] = React.useState('')
   const [selectedCssStyle, setCssStyle] = React.useState<CssStyle>('css')
-  const [selectedIdentifyComponent, setIdentifyComponent] = React.useState(1)
+  const [selectedIdentifyComponent, setIdentifyComponent] = React.useState(IdentifyComponentType.IdentifyComponent)
   const [selectedUnitType, setUnitType] = React.useState<UnitType>('px')
   const [userComponentSettings, setUserComponentSettings] = React.useState<UserComponentSetting[]>([])
   const textComponentRef = React.useRef<HTMLTextAreaElement>(null)
@@ -100,6 +101,7 @@ const App: React.VFC = () => {
   const notifyChangeIdentifyComponent = (event: React.ChangeEvent<HTMLInputElement>) => {
     const msg: messageTypes = { type: 'new-identify-component-set', identify: event.target.value }
     parent.postMessage({ pluginMessage: msg }, '*')
+    setIdentifyComponent(String(event.target.value) as IdentifyComponentType)
   }
 
   const notifyChangeUnitType = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,8 +192,15 @@ const App: React.VFC = () => {
         <div className={styles.optionList}>
           {IdentifyComponent.map((v) => (
             <div key={v.value} className={styles.option}>
-              <input type="radio" name="css-style" id={String(v.value)} value={v.value} checked={selectedIdentifyComponent === v.value} onChange={notifyChangeIdentifyComponent} />
-              <label htmlFor={String(v.value)}>{v.label}</label>
+              <input
+                type="radio"
+                name="css-style"
+                id={IdentifyComponentType.IdentifyComponent}
+                value={v.value}
+                checked={selectedIdentifyComponent === v.value}
+                onChange={notifyChangeIdentifyComponent}
+              />
+              <label htmlFor={v.value}>{v.label}</label>
             </div>
           ))}
         </div>

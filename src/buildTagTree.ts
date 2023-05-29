@@ -1,3 +1,4 @@
+import { IdentifyComponentType } from './buildCode'
 import { UnitType } from './buildSizeStringByUnit'
 import { CSSData, getCssDataForTag, TextCount } from './getCssDataForTag'
 import { specialLetterReg } from './utils/cssUtils'
@@ -22,7 +23,7 @@ export type Tag = {
   isComponent?: boolean
 }
 
-export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: TextCount): Tag | null {
+export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: TextCount, identifyComponent: IdentifyComponentType): Tag | null {
   if (!node.visible) {
     return null
   }
@@ -37,7 +38,7 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
   const childTags: Tag[] = []
   if ('children' in node && !isImg) {
     node.children.forEach((child) => {
-      const childTag = buildTagTree(child, unitType, textCount)
+      const childTag = buildTagTree(child, unitType, textCount, identifyComponent)
       if (childTag) {
         childTags.push(childTag)
       }
@@ -47,7 +48,7 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
   const tag: Tag = {
     name: isImg ? 'img' : node.name.replace(specialLetterReg, ''),
     isText: node.type === 'TEXT',
-    isInstance: node.type === 'INSTANCE',
+    isInstance: identifyComponent === IdentifyComponentType.IdentifyComponent ? node.type === 'INSTANCE' : false,
     textCharacters: node.type === 'TEXT' ? node.characters : null,
     isImg,
     css: getCssDataForTag(node, unitType, textCount),

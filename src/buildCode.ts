@@ -3,7 +3,10 @@ import { Tag } from './buildTagTree'
 import { buildClassName, specialLetterReg } from './utils/cssUtils'
 
 type CssStyle = 'css' | 'styled-components'
-
+export enum IdentifyComponentType {
+  'IdentifyComponent' = '1',
+  'IgnoreComponent' = '0'
+}
 function buildSpaces(baseSpaces: number, level: number) {
   let spacesStr = ''
 
@@ -122,7 +125,7 @@ export function buildCode(tag: Tag, css: CssStyle): string {
   ${buildImportString(tag)}
   const ${componentName}: React.FC = () => {
   return (
-${buildJsxString(tag, css, 0)}
+    ${buildJsxString(tag, css, 0)}
   )
   
 }
