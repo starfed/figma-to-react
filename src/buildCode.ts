@@ -22,9 +22,9 @@ function buildSpaces(baseSpaces: number, level: number) {
 
 function guessTagName(name: string) {
   const _name = name.toLowerCase()
-  if (_name.includes('button')) {
-    return 'button'
-  }
+  // if (_name.includes('button')) {
+  //   return 'button'
+  // }
   if (_name.includes('section')) {
     return 'section'
   }
