@@ -225,7 +225,7 @@ const App: React.VFC = () => {
           onUpdate={onUpdateUserComponentSetting}
         /> */}
       </div>
-      <div onClick={() => downloadFile()}>test download</div>
+      {/* <div onClick={() => downloadFile()}>test download</div> */}
     </div>
   )
 }
