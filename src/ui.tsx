@@ -6,7 +6,6 @@ import { messageTypes } from './messagesTypes'
 import { IdentifyComponentType } from './buildCode'
 import styles from './ui.css'
 import Spacer from './ui/Spacer'
-import UserComponentSettingList from './ui/UserComponentSettingList'
 import { UserComponentSetting } from './userComponentSetting'
 //import { saveAs } from 'file-saver'
 function escapeHtml(str: string) {
@@ -23,9 +22,9 @@ function escapeHtml(str: string) {
 function insertSyntaxHighlightText(text: string) {
   return text
     .replaceAll('const', `const <span class="${styles.variableName}">`)
-    .replaceAll(': React.VFC', `</span>: React.VFC`)
+    .replaceAll(': React.FC', `</span>: React.FC`)
     .replaceAll('= styled.', `</span>= styled.`)
-    .replaceAll('React.VFC', `<span class="${styles.typeText}">React.VFC</span>`)
+    .replaceAll('React.FC', `<span class="${styles.typeText}">React.FC</span>`)
     .replaceAll('return', `<span class="${styles.returnText}">return</span>`)
     .replaceAll(': ', `<span class="${styles.expressionText}">: </span>`)
     .replaceAll('= ()', `<span class="${styles.expressionText}">= ()</span>`)
@@ -56,7 +55,7 @@ const unitTypes: { value: UnitType; label: string }[] = [
   { value: 'remAs10px', label: 'rem(as 10px)' }
 ]
 
-const App: React.VFC = () => {
+const App: React.FC = () => {
   const [code, setCode] = React.useState('')
 
   const [componentCode, setComponentCode] = React.useState('')
@@ -93,42 +92,12 @@ const App: React.VFC = () => {
     }
   }
 
-  const notifyChangeCssStyle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const msg: messageTypes = { type: 'new-css-style-set', cssStyle: event.target.value as CssStyle }
-    parent.postMessage({ pluginMessage: msg }, '*')
-  }
-
   const notifyChangeIdentifyComponent = (event: React.ChangeEvent<HTMLInputElement>) => {
     const msg: messageTypes = { type: 'new-identify-component-set', identify: event.target.value }
     parent.postMessage({ pluginMessage: msg }, '*')
     setIdentifyComponent(String(event.target.value) as IdentifyComponentType)
   }
 
-  const notifyChangeUnitType = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const msg: messageTypes = { type: 'new-unit-type-set', unitType: event.target.value as UnitType }
-    parent.postMessage({ pluginMessage: msg }, '*')
-  }
-
-  const notifyUpdateComponentSettings = (userComponentSettings: UserComponentSetting[]) => {
-    const msg: messageTypes = { type: 'update-user-component-settings', userComponentSettings: userComponentSettings }
-    parent.postMessage({ pluginMessage: msg }, '*')
-  }
-
-  const onAddUserComponentSetting = (userComponentSetting: UserComponentSetting) => {
-    notifyUpdateComponentSettings([...userComponentSettings, userComponentSetting])
-  }
-
-  const onUpdateUserComponentSetting = (userComponentSetting: UserComponentSetting, index: number) => {
-    const newUserComponentSettings = [...userComponentSettings]
-    newUserComponentSettings[index] = userComponentSetting
-    notifyUpdateComponentSettings(newUserComponentSettings)
-  }
-
-  const onDeleteUserComponentSetting = (name: string) => {
-    notifyUpdateComponentSettings(userComponentSettings.filter((setting) => setting.name !== name))
-  }
-
-  const syntaxHighlightedCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(code)), [code])
   const syntaxHighlightedComponentCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(componentCode)), [componentCode])
   const syntaxHighlightedCssCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(cssCode)), [cssCode])
   // set initial values taken from figma storage

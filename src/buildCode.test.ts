@@ -35,7 +35,7 @@ describe('when css style is pure CSS', () => {
     const frameNode = createFrameWithDefaultProperties(figma)
 
     const tag = await modifyTreeForComponent(buildTagTree(frameNode, 'px', new TextCount())!, figma)
-    expect(buildCode(tag, 'css')).toBe(`const Test: React.VFC = () => {
+    expect(buildCode(tag, 'css')).toBe(`const Test: React.FC = () => {
   return (
     <div className="test" />
   )
@@ -48,7 +48,7 @@ describe('when css style is pure CSS', () => {
     parentNode.appendChild(childNode)
 
     const tag = await modifyTreeForComponent(buildTagTree(parentNode, 'px', new TextCount())!, figma)
-    expect(buildCode(tag, 'css')).toBe(`const Parent: React.VFC = () => {
+    expect(buildCode(tag, 'css')).toBe(`const Parent: React.FC = () => {
   return (
     <div className="parent">
       <div className="child" />
@@ -62,7 +62,7 @@ describe('when css style is pure CSS', () => {
     const textNode = createTextNodeWithDefaultProperties(figma, { name: 'Text', characters })
 
     const tag = await modifyTreeForComponent(buildTagTree(textNode, 'px', new TextCount())!, figma)
-    expect(buildCode(tag, 'css')).toBe(`const Text: React.VFC = () => {
+    expect(buildCode(tag, 'css')).toBe(`const Text: React.FC = () => {
   return (
     <p className="text-1">${characters}</p>
   )
@@ -73,7 +73,7 @@ describe('when css style is pure CSS', () => {
     const imageNode = createFrameWithDefaultProperties(figma, { name: 'Image', isImage: true })
 
     const tag = await modifyTreeForComponent(buildTagTree(imageNode, 'px', new TextCount())!, figma)
-    expect(buildCode(tag, 'css')).toBe(`const Img: React.VFC = () => {
+    expect(buildCode(tag, 'css')).toBe(`const Img: React.FC = () => {
   return (
     <img src="" />
   )
@@ -86,7 +86,7 @@ describe('when css style is styled-components', () => {
     const frameNode = createFrameWithDefaultProperties(figma)
 
     const tag = await modifyTreeForComponent(buildTagTree(frameNode, 'px', new TextCount())!, figma)
-    expect(buildCode(tag, 'styled-components')).toBe(`const Test: React.VFC = () => {
+    expect(buildCode(tag, 'styled-components')).toBe(`const Test: React.FC = () => {
   return (
     <Test />
   )
@@ -99,7 +99,7 @@ describe('when css style is styled-components', () => {
     parentNode.appendChild(childNode)
 
     const tag = await modifyTreeForComponent(buildTagTree(parentNode, 'px', new TextCount())!, figma)
-    expect(buildCode(tag, 'styled-components')).toBe(`const Parent: React.VFC = () => {
+    expect(buildCode(tag, 'styled-components')).toBe(`const Parent: React.FC = () => {
   return (
     <Parent>
       <Child />
@@ -114,7 +114,7 @@ describe('when css style is styled-components', () => {
     const textNode = createTextNodeWithDefaultProperties(figma, { name: 'Text', characters })
 
     const tag = await modifyTreeForComponent(buildTagTree(textNode, 'px', new TextCount())!, figma)
-    expect(buildCode(tag, 'styled-components')).toBe(`const Text: React.VFC = () => {
+    expect(buildCode(tag, 'styled-components')).toBe(`const Text: React.FC = () => {
   return (
     <Text>${characters}</Text>
   )
@@ -125,7 +125,7 @@ describe('when css style is styled-components', () => {
     const imageNode = createFrameWithDefaultProperties(figma, { name: 'Image', isImage: true })
 
     const tag = await modifyTreeForComponent(buildTagTree(imageNode, 'px', new TextCount())!, figma)
-    expect(buildCode(tag, 'styled-components')).toBe(`const Img: React.VFC = () => {
+    expect(buildCode(tag, 'styled-components')).toBe(`const Img: React.FC = () => {
   return (
     <img src="" />
   )
@@ -140,7 +140,7 @@ test('render Frame with invisible node', async () => {
   parentNode.appendChild(childNode)
 
   const tag = await modifyTreeForComponent(buildTagTree(parentNode, 'px', new TextCount())!, figma)
-  expect(buildCode(tag, 'styled-components')).toBe(`const Parent: React.VFC = () => {
+  expect(buildCode(tag, 'styled-components')).toBe(`const Parent: React.FC = () => {
   return (
     <Parent />
   )

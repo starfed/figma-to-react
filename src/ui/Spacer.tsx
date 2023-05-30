@@ -5,7 +5,7 @@ type Props = {
   axis: 'vertical' | 'horizontal'
 }
 
-const Spacer: React.VFC<Props> = ({ size, axis, ...delegated }) => {
+const Spacer: React.FC<Props> = ({ size, axis, ...delegated }) => {
   const width = axis === 'vertical' ? 1 : size
   const height = axis === 'horizontal' ? 1 : size
   return (
