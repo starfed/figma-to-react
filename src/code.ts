@@ -8,7 +8,7 @@ import { buildCssString, CssStyle } from './buildCssString'
 import { UserComponentSetting } from './userComponentSetting'
 import { TextCount } from './getCssDataForTag'
 
-figma.showUI(__html__, { width: 680, height: 680 })
+figma.showUI(__html__, { width: 980, height: 780 })
 
 const selectedNodes = figma.currentPage.selection
 
