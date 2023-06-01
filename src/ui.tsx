@@ -116,10 +116,17 @@ const App: React.FC = () => {
   return (
     <div>
       <div className={styles.code}>
-        <textarea className={styles.textareaForClipboard} ref={textComponentRef} value={componentCode} readOnly />
-
-        <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedComponentCode }} />
-
+        <div className={styles.codeContent}>
+          <div className={styles.codeLeft}>
+            <textarea className={styles.textareaForClipboard} ref={textComponentRef} value={componentCode} readOnly />
+            <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedComponentCode }} />
+          </div>
+          <div className={styles.codeRight}>
+            <p>
+              A place to show preview
+            </p>
+          </div>
+        </div>
         <Spacer axis="vertical" size={12} />
 
         <div className={styles.buttonLayout}>
