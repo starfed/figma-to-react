@@ -7,6 +7,7 @@ import { IdentifyComponentType } from './buildCode'
 import styles from './ui.css'
 import Spacer from './ui/Spacer'
 import { UserComponentSetting } from './userComponentSetting'
+import Preview from './preview'
 //import { saveAs } from 'file-saver'
 function escapeHtml(str: string) {
   str = str.replace(/&/g, '&amp;')
@@ -57,7 +58,7 @@ const unitTypes: { value: UnitType; label: string }[] = [
 
 const App: React.FC = () => {
   const [code, setCode] = React.useState('')
-
+  const [previewCode, setPreviewCode] = React.useState('')
   const [componentCode, setComponentCode] = React.useState('')
   const [cssCode, setCssCode] = React.useState('')
   const [selectedCssStyle, setCssStyle] = React.useState<CssStyle>('css')
@@ -100,6 +101,19 @@ const App: React.FC = () => {
 
   const syntaxHighlightedComponentCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(componentCode)), [componentCode])
   const syntaxHighlightedCssCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(cssCode)), [cssCode])
+
+  const getComponentPreviewCode = () => {
+    let pcode = ''
+    if (selectedIdentifyComponent === IdentifyComponentType.IdentifyComponent) {
+      pcode = `
+      <div>
+        <p className="notSupport"> 嵌套子组件暂时无法提供预览服务</div>
+      </div>`
+    } else if (selectedIdentifyComponent === IdentifyComponentType.IgnoreComponent) {
+      pcode = ''
+    }
+    setPreviewCode(pcode)
+  }
   // set initial values taken from figma storage
   React.useEffect(() => {
     onmessage = (event) => {
@@ -113,6 +127,10 @@ const App: React.FC = () => {
     }
   }, [])
 
+  React.useEffect(() => {
+    getComponentPreviewCode()
+  }, [code])
+
   return (
     <div>
       <div className={styles.code}>
@@ -122,9 +140,7 @@ const App: React.FC = () => {
             <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedComponentCode }} />
           </div>
           <div className={styles.codeRight}>
-            <p>
-              A place to show preview
-            </p>
+            <p>A place to show preview</p>
           </div>
         </div>
         <Spacer axis="vertical" size={12} />
@@ -164,6 +180,7 @@ const App: React.FC = () => {
           ))}
           
         </div> */}
+        <Preview code={previewCode} scope={null} />
 
         <div className={styles.optionList}>
           {IdentifyComponent.map((v) => (
