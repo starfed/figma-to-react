@@ -1,7 +1,7 @@
 import { CSSData } from './getCssDataForTag'
 import { Tag } from './buildTagTree'
 import { buildClassName } from './utils/cssUtils'
-
+import { CssToTailwindTranslator } from 'css-to-tailwind-translator'
 export type CssStyle = 'css' | 'styled-components'
 
 function buildArray(tag: Tag, arr: CSSData[]): CSSData[] {
@@ -15,6 +15,16 @@ function buildArray(tag: Tag, arr: CSSData[]): CSSData[] {
   })
 
   return arr
+}
+
+export function buildTailwind(tag: Tag): string {
+  const cssString = buildCssString(tag, 'css')
+  const result = CssToTailwindTranslator(cssString)
+  if (result.code === 'OK') {
+    return result.data.map((v) => v.resultVal).join(' ')
+  } else {
+    return ''
+  }
 }
 
 export function buildCssString(tag: Tag, cssStyle: CssStyle): string {

@@ -3,9 +3,15 @@ import { Tag } from './buildTagTree'
 import { buildClassName, specialLetterReg } from './utils/cssUtils'
 
 type CssStyle = 'css' | 'styled-components'
+
 export enum IdentifyComponentType {
   'IdentifyComponent' = '1',
   'IgnoreComponent' = '0'
+}
+
+export enum CssStyleList {
+  'css' = 'css',
+  'tailwind' = 'tailwind'
 }
 function buildSpaces(baseSpaces: number, level: number) {
   let spacesStr = ''

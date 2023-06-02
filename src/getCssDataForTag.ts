@@ -228,7 +228,7 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
     let className = node.name
 
     if (isImageNode(node)) {
-      properties.push({ name: 'background-image', value: `url('@/assets/imgs/${node.name}.png')` })
+      properties.push({ name: 'background-image', value: `url(https://via.placeholder.com/${node.width}x${node.height})` })
       properties.push({ name: 'background-size', value: 'cover' })
       className = node.parent?.name + 'img' + textCount.count
       textCount.increment()

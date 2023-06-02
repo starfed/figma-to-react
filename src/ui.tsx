@@ -3,11 +3,11 @@ import * as ReactDom from 'react-dom'
 import { CssStyle } from './buildCssString'
 import { UnitType } from './buildSizeStringByUnit'
 import { messageTypes } from './messagesTypes'
-import { IdentifyComponentType } from './buildCode'
+import { IdentifyComponentType, CssStyleList } from './buildCode'
 import styles from './ui.css'
 import Spacer from './ui/Spacer'
 import { UserComponentSetting } from './userComponentSetting'
-import Preview from './preview'
+import Preview, { StyleSupportComponent } from './preview'
 //import { saveAs } from 'file-saver'
 function escapeHtml(str: string) {
   str = str.replace(/&/g, '&amp;')
@@ -40,9 +40,9 @@ function insertSyntaxHighlightText(text: string) {
     .replaceAll('`', `<span class="${styles.stringText}">${'`'}</span>`)
 }
 
-const cssStyles: { value: CssStyle; label: string }[] = [
-  { value: 'css', label: 'CSS' },
-  { value: 'styled-components', label: 'styled-components' }
+const cssStyles: { value: CssStyleList; label: string }[] = [
+  { value: CssStyleList.css, label: CssStyleList.css },
+  { value: CssStyleList.tailwind, label: CssStyleList.tailwind }
 ]
 
 const IdentifyComponent = [
@@ -105,12 +105,24 @@ const App: React.FC = () => {
   const getComponentPreviewCode = () => {
     let pcode = ''
     if (selectedIdentifyComponent === IdentifyComponentType.IdentifyComponent) {
-      pcode = `
-      <div>
-        <p className="notSupport"> 嵌套子组件暂时无法提供预览服务</div>
-      </div>`
+      const styles = '.notSupport{color:red}'
+      const code = '<p className="notSupport"> 嵌套子组件暂时无法提供预览服务</p>'
+      pcode = ` <StyleSupportComponent styles='${styles}'  >${code}</StyleSupportComponent>`
     } else if (selectedIdentifyComponent === IdentifyComponentType.IgnoreComponent) {
-      pcode = ''
+      //const styles = cssCode.replaceAll(/background-image.*\(.*\)/g, '')
+      const styles = cssCode
+      const matchs = componentCode.match(/return\s*\(([\s\S]*)\)/)
+      let innerString = matchs?.[1] ? matchs[1] : ''
+      const classMatchReg = /className=\{styles\.(.*)\}/
+      while (classMatchReg.test(innerString)) {
+        const classMatch = innerString.match(classMatchReg)
+        if (classMatch?.[1]) {
+          innerString = innerString.replace(classMatch[0], `className='${classMatch[1]}'`)
+        }
+      }
+
+      const code = innerString
+      pcode = ` <StyleSupportComponent styles='${styles}'  >${code}</StyleSupportComponent>`
     }
     setPreviewCode(pcode)
   }
@@ -129,7 +141,7 @@ const App: React.FC = () => {
 
   React.useEffect(() => {
     getComponentPreviewCode()
-  }, [code])
+  }, [componentCode, cssCode])
 
   return (
     <div>
@@ -171,23 +183,22 @@ const App: React.FC = () => {
 
         <Spacer axis="vertical" size={12} />
 
-        {/* <div className={styles.optionList}>
+        <div className={styles.optionList}>
           {cssStyles.map((style) => (
             <div key={style.value} className={styles.option}>
               <input type="radio" name="css-style" id={style.value} value={style.value} checked={selectedCssStyle === style.value} onChange={notifyChangeCssStyle} />
               <label htmlFor={style.value}>{style.label}</label>
             </div>
           ))}
-          
-        </div> */}
-        <Preview code={previewCode} scope={null} />
+        </div>
+        <Preview code={previewCode} scope={{ StyleSupportComponent }} />
 
         <div className={styles.optionList}>
           {IdentifyComponent.map((v) => (
             <div key={v.value} className={styles.option}>
               <input
                 type="radio"
-                name="css-style"
+                name="identify-component"
                 id={IdentifyComponentType.IdentifyComponent}
                 value={v.value}
                 checked={selectedIdentifyComponent === v.value}
