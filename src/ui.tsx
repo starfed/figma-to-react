@@ -9,7 +9,8 @@ import Spacer from './ui/Spacer'
 import Preview, { StyleSupportComponent } from './preview'
 import copy from 'copy-to-clipboard'
 import Editor from '@monaco-editor/react'
-
+import JSZip from 'jszip'
+import { saveAs } from 'file-saver'
 const cssStyles: { value: CssStyleList; label: string }[] = [
   { value: CssStyleList.css, label: CssStyleList.css },
   { value: CssStyleList.tailwind, label: CssStyleList.tailwind }
@@ -35,8 +36,15 @@ const App: React.FC = () => {
   }
 
   const downloadFile = () => {
-    const blob = new Blob(['Hello, world!'], { type: 'text/plain;charset=utf-8' })
-    //saveAs(blob, 'hello world.txt')
+    const zip = new JSZip()
+
+    zip.file('index.tsx', componentCode)
+    if (selectedCssStyle === 'css') zip.file('index.css', cssCode)
+
+    zip.generateAsync({ type: 'blob' }).then(function (content) {
+      // see FileSaver.js
+      saveAs(content, 'component.zip')
+    })
   }
 
   const copyCssToClipboard = () => {
@@ -196,6 +204,15 @@ const App: React.FC = () => {
       <div className={styles.module}>
         <h2 className={styles.heading}>Preview</h2>
         <Preview code={previewCode} scope={{ StyleSupportComponent }} />
+      </div>
+
+      <div className={styles.module}>
+        <h2 className={styles.heading}>Component Download</h2>
+        <div className={styles.buttonLayout}>
+          <button className={styles.copyButton} onClick={downloadFile}>
+            Download
+          </button>
+        </div>
       </div>
       {/* <div onClick={() => downloadFile()}>test download</div> */}
     </div>
