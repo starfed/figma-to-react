@@ -7,13 +7,13 @@ import { buildTagTree } from './buildTagTree'
 import { buildCssString, CssStyle } from './buildCssString'
 import { UserComponentSetting } from './userComponentSetting'
 import { TextCount } from './getCssDataForTag'
+import { getRightName } from './utils/cssUtils'
 
 figma.showUI(__html__, { width: 980, height: 780 })
 
 const selectedNodes = figma.currentPage.selection
 
 async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType?: UnitType; identifyComponent?: IdentifyComponentType }) {
-  console.log(node, config.identifyComponent)
   let cssStyle = config.cssStyle
   if (!cssStyle) {
     cssStyle = await figma.clientStorage.getAsync(STORAGE_KEYS.CSS_STYLE_KEY)
@@ -53,7 +53,7 @@ async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType
   const generatedCodeStr = buildCode(tag, cssStyle)
   const cssString = buildCssString(tag, cssStyle)
 
-  figma.ui.postMessage({ generatedCodeStr, cssString, cssStyle, unitType, userComponentSettings })
+  figma.ui.postMessage({ generatedCodeStr, cssString, cssStyle, unitType, userComponentSettings, nodeName: getRightName(node.name) })
 }
 
 if (selectedNodes.length > 1) {
@@ -77,7 +77,7 @@ figma.ui.onmessage = (msg: messageTypes) => {
 
   if (msg.type === 'new-identify-component-set') {
     figma.clientStorage.setAsync(STORAGE_KEYS.IDENTIFY_COMPONENT, msg.identify)
-    console.log(msg.identify)
+
     generate(selectedNodes[0], { identifyComponent: msg.identify as IdentifyComponentType })
   }
   if (msg.type === 'new-unit-type-set') {

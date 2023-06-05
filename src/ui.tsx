@@ -25,13 +25,13 @@ const App: React.FC = () => {
   const [previewCode, setPreviewCode] = React.useState('')
   const [componentCode, setComponentCode] = React.useState('')
   const [cssCode, setCssCode] = React.useState('')
-
+  const [componentName, setComponentName] = React.useState('')
   const [selectedCssStyle, setCssStyle] = React.useState<CssStyle>('css')
   const [selectedIdentifyComponent, setIdentifyComponent] = React.useState(IdentifyComponentType.IdentifyComponent)
 
   const copyComponentToClipboard = () => {
     const msg: messageTypes = { type: 'notify-copy-success' }
-    parent.postMessage(msg, '*')
+    parent.postMessage({ pluginMessage: msg }, '*')
     copy(componentCode)
   }
 
@@ -42,14 +42,15 @@ const App: React.FC = () => {
     if (selectedCssStyle === 'css') zip.file('index.css', cssCode)
 
     zip.generateAsync({ type: 'blob' }).then(function (content) {
+      const name = componentName || 'Component'
       // see FileSaver.js
-      saveAs(content, 'component.zip')
+      saveAs(content, name + '.zip')
     })
   }
 
   const copyCssToClipboard = () => {
     const msg: messageTypes = { type: 'notify-copy-success' }
-    parent.postMessage(msg, '*')
+    parent.postMessage({ pluginMessage: msg }, '*')
     copy(cssCode)
   }
 
@@ -93,7 +94,6 @@ const App: React.FC = () => {
           innerString = innerString.replace(classMatch[0], `className='${classMatch[1]}'`)
         }
       }
-
       const code = innerString
       pcode = ` <StyleSupportComponent styles='${styles}'  >${code}</StyleSupportComponent>`
     }
@@ -108,6 +108,7 @@ const App: React.FC = () => {
         setCssStyle(event.data.pluginMessage.cssStyle)
         setComponentCode(event.data.pluginMessage.generatedCodeStr)
         setCssCode(event.data.pluginMessage.cssString)
+        setComponentName(event.data.pluginMessage.nodeName)
       }
     }
   }, [])

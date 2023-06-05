@@ -126,7 +126,7 @@ export function buildCode(tag: Tag, css: CssStyle): string {
   if (css === CssStyleList.css) {
     cssImport = `import styles from './index.css';`
   }
-  const componentName = capitalizeFirstLetter(tag.name)
+  const componentName = 'Index' //capitalizeFirstLetter(tag.name)
   return `${cssImport}
   ${buildImportString(tag)}
   const ${componentName}: React.FC = () => {
