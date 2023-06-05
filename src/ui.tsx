@@ -95,9 +95,12 @@ const App: React.FC = () => {
   // set initial values taken from figma storage
   React.useEffect(() => {
     onmessage = (event) => {
-      setCssStyle(event.data.pluginMessage.cssStyle)
-      setComponentCode(event.data.pluginMessage.generatedCodeStr)
-      setCssCode(event.data.pluginMessage.cssString)
+      console.log(event.data.pluginMessage)
+      if (event.data.pluginMessage) {
+        setCssStyle(event.data.pluginMessage.cssStyle)
+        setComponentCode(event.data.pluginMessage.generatedCodeStr)
+        setCssCode(event.data.pluginMessage.cssString)
+      }
     }
   }, [])
 
@@ -106,7 +109,7 @@ const App: React.FC = () => {
   }, [componentCode, cssCode, selectedIdentifyComponent])
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       <div className={styles.code}>
         <div className={styles.codeContent}>
           <div className={styles.codeLeft}>
@@ -115,7 +118,7 @@ const App: React.FC = () => {
               theme="vs-dark"
               value={componentCode}
               onChange={componentCodeChange}
-              width={450}
+              width={selectedCssStyle === 'tailwind' ? 900 : 450}
               height={450}
               options={{
                 minimap: {

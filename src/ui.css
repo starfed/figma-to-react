@@ -3,24 +3,33 @@
   color: #424347;
   box-sizing: border-box;
 }
+
 body {
   padding: 0;
   margin: 0;
 }
+
 p {
   margin: 0;
 }
+
 input {
   margin: 0;
+}
+
+.wrapper {
+  padding: 20px;
 }
 
 .code {
   padding: 20px;
   background-color: #f0f0f0;
 }
+
 .codeContent {
   display: flex;
   justify-content: space-between;
+  width: 100%;
 }
 
 .module {
@@ -84,32 +93,4 @@ input {
   background-color: #16949f;
   color: #fff;
   cursor: pointer;
-}
-
-.defaultText {
-  color: #5497c3;
-}
-.variableName {
-  color: #cccca8;
-}
-.functionText {
-  color: #93c3ef;
-}
-.returnText {
-  color: #b586b2;
-}
-.expressionText {
-  color: #fff;
-}
-.typeText {
-  color: #4fccb0;
-}
-.tagText {
-  color: #777;
-}
-.tagNameText {
-  color: #4fccb0;
-}
-.stringText {
-  color: #cb9178;
 }
