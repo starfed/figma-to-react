@@ -14,6 +14,7 @@ figma.showUI(__html__, { width: 980, height: 780 })
 const selectedNodes = figma.currentPage.selection
 
 async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType?: UnitType; identifyComponent?: IdentifyComponentType }) {
+  console.log(node)
   let cssStyle = config.cssStyle
   if (!cssStyle) {
     cssStyle = await figma.clientStorage.getAsync(STORAGE_KEYS.CSS_STYLE_KEY)

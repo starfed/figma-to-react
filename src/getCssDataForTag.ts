@@ -191,9 +191,9 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
         value:
           (node.lineHeight as LineHeight).unit === 'AUTO'
             ? 'auto'
-            : (node.letterSpacing as LetterSpacing).unit === 'PIXELS'
+            : (node.lineHeight as LetterSpacing).unit === 'PIXELS'
             ? buildSizeStringByUnit((node.lineHeight as LineHeightWithValue).value, unitType)
-            : (node.lineHeight as LineHeightWithValue).value + '%'
+            : (node.lineHeight as LineHeightWithValue).value.toFixed(0) + '%'
       })
 
       if (node.textDecoration === 'STRIKETHROUGH' || node.textDecoration === 'UNDERLINE') {

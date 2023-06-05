@@ -50,11 +50,11 @@ function getTagName(tag: Tag, cssStyle: CssStyle) {
 }
 
 function getClassName(tag: Tag, cssStyle: CssStyle) {
-  if (cssStyle === 'css') {
+  if (cssStyle === 'css' && tag.css.className) {
     // if (tag.isImg) {
     //   return ''
     // }
-    if (/[.\-_]/.test(tag.css.className)) return ` className={styles[${buildClassName(tag.css.className)}]}`
+
     return ` className={styles.${buildClassName(tag.css.className)}}`
   }
   return ''
