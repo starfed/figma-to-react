@@ -24,7 +24,10 @@ async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType
   }
 
   if (!config.identifyComponent) {
-    config.identifyComponent = IdentifyComponentType.IdentifyComponent
+    config.identifyComponent = await figma.clientStorage.getAsync(STORAGE_KEYS.IDENTIFY_COMPONENT)
+    if (!config.identifyComponent) {
+      config.identifyComponent = IdentifyComponentType.IdentifyComponent
+    }
   }
 
   let unitType = config.unitType
@@ -73,6 +76,7 @@ figma.ui.onmessage = (msg: messageTypes) => {
   }
 
   if (msg.type === 'new-identify-component-set') {
+    figma.clientStorage.setAsync(STORAGE_KEYS.IDENTIFY_COMPONENT, msg.identify)
     console.log(msg.identify)
     generate(selectedNodes[0], { identifyComponent: msg.identify as IdentifyComponentType })
   }

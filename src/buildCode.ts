@@ -2,17 +2,13 @@ import { capitalizeFirstLetter } from './utils/stringUtils'
 import { Tag } from './buildTagTree'
 import { buildClassName, specialLetterReg } from './utils/cssUtils'
 
-type CssStyle = 'css' | 'styled-components'
+import { CssStyleList, CssStyle, buildTailwind } from './buildCssString'
 
 export enum IdentifyComponentType {
   'IdentifyComponent' = '1',
   'IgnoreComponent' = '0'
 }
 
-export enum CssStyleList {
-  'css' = 'css',
-  'tailwind' = 'tailwind'
-}
 function buildSpaces(baseSpaces: number, level: number) {
   let spacesStr = ''
 
@@ -41,7 +37,7 @@ function guessTagName(name: string) {
 }
 
 function getTagName(tag: Tag, cssStyle: CssStyle) {
-  if (cssStyle === 'css' && !tag.isComponent) {
+  if (cssStyle === CssStyleList.css || cssStyle === CssStyleList.tailwind) {
     // if (tag.isImg) {
     //   return 'img'
     // }
@@ -54,7 +50,7 @@ function getTagName(tag: Tag, cssStyle: CssStyle) {
 }
 
 function getClassName(tag: Tag, cssStyle: CssStyle) {
-  if (cssStyle === 'css' && !tag.isComponent) {
+  if (cssStyle === 'css') {
     // if (tag.isImg) {
     //   return ''
     // }
@@ -86,7 +82,7 @@ function buildJsxString(tag: Tag, cssStyle: CssStyle, level: number) {
   const hasChildren = tag.children.length > 0
 
   const tagName = getTagName(tag, cssStyle).replace(specialLetterReg, '')
-  const className = getClassName(tag, cssStyle)
+  const className = cssStyle === CssStyleList.css ? getClassName(tag, cssStyle) : buildTailwind(tag)
   const properties = tag.properties.map(buildPropertyString).join('')
 
   if (tag.isInstance) {
@@ -126,8 +122,12 @@ function buildImportString(tag: Tag): string {
 }
 
 export function buildCode(tag: Tag, css: CssStyle): string {
+  let cssImport = ''
+  if (css === CssStyleList.css) {
+    cssImport = `import styles from './index.css';`
+  }
   const componentName = capitalizeFirstLetter(tag.name)
-  return `import styles from './index.css';
+  return `${cssImport}
   ${buildImportString(tag)}
   const ${componentName}: React.FC = () => {
   return (

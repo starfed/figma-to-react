@@ -23,23 +23,7 @@ input {
   justify-content: space-between;
 }
 
-.codeLeft {
-  flex: 1;
-}
-
-.codeRight {
-  width: 250px;
-  margin-left: 20px;
-  height: auto;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: 8px;
-}
-
-.settings {
+.module {
   padding: 20px;
 }
 

@@ -2,8 +2,11 @@ import { CSSData } from './getCssDataForTag'
 import { Tag } from './buildTagTree'
 import { buildClassName } from './utils/cssUtils'
 import { CssToTailwindTranslator } from 'css-to-tailwind-translator'
-export type CssStyle = 'css' | 'styled-components'
-
+export type CssStyle = 'css' | 'tailwind' | 'styled-components'
+export enum CssStyleList {
+  'css' = 'css',
+  'tailwind' = 'tailwind'
+}
 function buildArray(tag: Tag, arr: CSSData[]): CSSData[] {
   if (tag.isInstance) return arr
   if (!tag.isComponent) {
@@ -18,17 +21,25 @@ function buildArray(tag: Tag, arr: CSSData[]): CSSData[] {
 }
 
 export function buildTailwind(tag: Tag): string {
-  const cssString = buildCssString(tag, 'css')
+  const cssString = buildCssString(tag, CssStyleList.css, true)
   const result = CssToTailwindTranslator(cssString)
+  let classString = ''
   if (result.code === 'OK') {
-    return result.data.map((v) => v.resultVal).join(' ')
+    classString = result.data.map((v) => v.resultVal).join(' ')
   } else {
     return ''
   }
+  return ` className='${classString}'`
 }
 
-export function buildCssString(tag: Tag, cssStyle: CssStyle): string {
-  const cssArray = buildArray(tag, [])
+export function buildCssString(tag: Tag, cssStyle: CssStyle, ignoreChildren = false): string {
+  let cssArray = []
+  if (ignoreChildren) {
+    cssArray = [tag.css]
+  } else {
+    cssArray = buildArray(tag, [])
+  }
+
   let codeStr = ''
 
   if (!cssArray) {

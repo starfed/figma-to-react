@@ -6,6 +6,8 @@
     "module": "es2015",
     "moduleResolution": "node",
     "jsx": "react",
-    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
+    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"],
+    "allowSyntheticDefaultImports":true
+
   }
 }

@@ -18,6 +18,7 @@ module.exports = (env, argv) => ({
       {
         test: /\.mjs$/,
         include: /node_modules/,
+
         type: 'javascript/auto'
       },
       // Converts TypeScript code to JavaScript
