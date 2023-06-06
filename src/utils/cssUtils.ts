@@ -10,3 +10,15 @@ export function buildClassName(className: string, textIndex?: number): string {
 export function getRightName(tagName: string) {
   return tagName.replace(specialLetterReg, '')
 }
+
+export function getPageWidth(width: number) {
+  width = Number(width)
+
+  if (width < 980) {
+    return 980
+  } else if (width > 1920) {
+    return 1920
+  } else {
+    return width
+  }
+}

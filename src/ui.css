@@ -32,8 +32,10 @@ input {
   justify-content: space-between;
   width: 100%;
 }
+
 .codeRight {
   margin-left: 15px;
+  width: 50%;
 }
 
 .module h2 {

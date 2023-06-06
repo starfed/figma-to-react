@@ -29,6 +29,7 @@ export function buildTailwind(tag: Tag): string {
   } else {
     return ''
   }
+  if (!classString) return ''
   return ` className='${classString}'`
 }
 

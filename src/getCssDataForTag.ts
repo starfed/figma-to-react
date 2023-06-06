@@ -135,7 +135,9 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
 
       if ((node.fills as Paint[]).length > 0 && (node.fills as Paint[])[0].type !== 'IMAGE') {
         const paint = (node.fills as Paint[])[0]
-        if (paint.visible) properties.push({ name: 'background-color', value: buildColorString(paint) })
+        const value = buildColorString(paint)
+        const name = value.includes('linear-gradient') ? 'background' : 'background-color'
+        if (paint.visible) properties.push({ name, value })
       }
 
       if ((node.strokes as Paint[]).length > 0) {
@@ -228,7 +230,7 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
     let className = node.name
 
     if (isImageNode(node)) {
-      properties.push({ name: 'background-image', value: `url(https://via.placeholder.com/${node.width}x${node.height})` })
+      properties.push({ name: 'background-image', value: `url(https://via.placeholder.com/${node.width.toFixed(0)}x${node.height.toFixed(0)})` })
       properties.push({ name: 'background-size', value: 'cover' })
       className = node.parent?.name + 'img' + textCount.count
       textCount.increment()
@@ -267,12 +269,30 @@ function rgbValueToHex(value: number) {
     .padStart(2, '0')
 }
 
+function figmaGradientToCSS(gradient: any) {
+  const stops = gradient.gradientStops.map((stop: any) => {
+    const { r, g, b, a } = stop.color
+    const position = stop.position * 100
+    return `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${a}) ${position}%`
+  })
+
+  const [x1, y1] = gradient.gradientTransform[1].slice(0, 2).map((n: number) => n.toFixed(2))
+  const x2 = 1 - x1
+  const y2 = 1 - y1
+
+  return `linear-gradient(${Math.round((Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI)}deg, ${stops.join(', ')})`
+}
+
 function buildColorString(paint: Paint) {
   if (paint.type === 'SOLID') {
     if (paint.opacity !== undefined && paint.opacity < 1) {
       return `rgba(${Math.floor(paint.color.r * 255)}, ${Math.floor(paint.color.g * 255)}, ${Math.floor(paint.color.b * 255)}, ${paint.opacity})`
     }
     return `#${rgbValueToHex(paint.color.r)}${rgbValueToHex(paint.color.g)}${rgbValueToHex(paint.color.b)}`
+  } else if (paint.type === 'GRADIENT_LINEAR') {
+    const linearGradient = figmaGradientToCSS(paint)
+    console.log(linearGradient)
+    return linearGradient
   }
 
   return ''

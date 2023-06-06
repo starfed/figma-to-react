@@ -123,13 +123,17 @@ const App: React.FC = () => {
         <h2 className={styles.heading}>代码</h2>
         <div className={styles.code}>
           <div className={styles.codeContent}>
-            <div className={styles.codeLeft}>
+            <div
+              className={styles.codeLeft}
+              style={{
+                width: selectedCssStyle === 'tailwind' ? '100%' : '50%'
+              }}
+            >
               <Editor
                 defaultLanguage="javascript"
                 theme="vs-dark"
                 value={componentCode}
                 onChange={componentCodeChange}
-                width={selectedCssStyle === 'tailwind' ? 900 : 450}
                 height={450}
                 options={{
                   minimap: {
@@ -152,7 +156,6 @@ const App: React.FC = () => {
                   theme="vs-dark"
                   value={cssCode}
                   onChange={cssCodeChange}
-                  width={450}
                   height={450}
                   options={{
                     minimap: {
@@ -170,6 +173,7 @@ const App: React.FC = () => {
               </div>
             )}
           </div>
+          <Spacer axis="vertical" size={12} />
           <div className={styles.buttonLayout}>
             <button className={styles.copyButton} onClick={downloadFile}>
               组件下载

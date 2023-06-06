@@ -66,7 +66,8 @@ function buildPropertyString(prop: Tag['properties'][number]) {
 
 function buildChildTagsString(tag: Tag, cssStyle: CssStyle, level: number): string {
   if (tag.children.length > 0) {
-    return '\n' + tag.children.map((child) => buildJsxString(child, cssStyle, level + 1)).join('\n')
+    const childString = tag.children.map((child) => buildJsxString(child, cssStyle, level + 1))
+    if (childString) return '\n' + childString.filter((v) => !!v).join('\n')
   }
   if (tag.isText) {
     return `${tag.textCharacters}`
@@ -88,6 +89,8 @@ function buildJsxString(tag: Tag, cssStyle: CssStyle, level: number) {
   if (tag.isInstance) {
     return `${spaceString}<${capitalizeFirstLetter(tag.name)} />`
   } else {
+    //空节点排除掉
+    if (!className && tag.children.length === 0) return ''
     const openingTag = `${spaceString}<${tagName}${className}${properties}${hasChildren || tag.isText ? `` : ' /'}>`
     const childTags = buildChildTagsString(tag, cssStyle, level)
     const closingTag = hasChildren || tag.isText ? `${!tag.isText ? '\n' + spaceString : ''}</${tagName}>` : ''
