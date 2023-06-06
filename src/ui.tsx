@@ -80,7 +80,7 @@ const App: React.FC = () => {
     let pcode = ''
     if (selectedIdentifyComponent === IdentifyComponentType.IdentifyComponent) {
       const styles = '.notSupport{color:red}'
-      const code = '<p className="notSupport"> 嵌套子组件暂时无法提供预览服务</p>'
+      const code = '<p className="notSupport"> 识别子组件模式下暂时无法提供预览服务</p>'
       pcode = ` <StyleSupportComponent styles='${styles}'  >${code}</StyleSupportComponent>`
     } else if (selectedIdentifyComponent === IdentifyComponentType.IgnoreComponent) {
       //const styles = cssCode.replaceAll(/background-image.*\(.*\)/g, '')
@@ -119,39 +119,17 @@ const App: React.FC = () => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.code}>
-        <div className={styles.codeContent}>
-          <div className={styles.codeLeft}>
-            <Editor
-              defaultLanguage="javascript"
-              theme="vs-dark"
-              value={componentCode}
-              onChange={componentCodeChange}
-              width={selectedCssStyle === 'tailwind' ? 900 : 450}
-              height={450}
-              options={{
-                minimap: {
-                  // 关闭代码缩略图
-                  enabled: false // 是否启用预览图
-                }
-              }}
-            />
-
-            <Spacer axis="vertical" size={12} />
-            <div className={styles.buttonLayout}>
-              <button className={styles.copyButton} onClick={copyComponentToClipboard}>
-                Copy Component to clipboard
-              </button>
-            </div>
-          </div>
-          {selectedCssStyle === CssStyleList.css && (
-            <div className={styles.codeRight}>
+      <div className={styles.module}>
+        <h2 className={styles.heading}>代码</h2>
+        <div className={styles.code}>
+          <div className={styles.codeContent}>
+            <div className={styles.codeLeft}>
               <Editor
-                defaultLanguage="css"
+                defaultLanguage="javascript"
                 theme="vs-dark"
-                value={cssCode}
-                onChange={cssCodeChange}
-                width={450}
+                value={componentCode}
+                onChange={componentCodeChange}
+                width={selectedCssStyle === 'tailwind' ? 900 : 450}
                 height={450}
                 options={{
                   minimap: {
@@ -162,17 +140,46 @@ const App: React.FC = () => {
               />
               <Spacer axis="vertical" size={12} />
               <div className={styles.buttonLayout}>
-                <button className={styles.copyButton} onClick={copyCssToClipboard}>
-                  Copy Css to clipboard
+                <button className={styles.copyButton} onClick={copyComponentToClipboard}>
+                  Copy Component to clipboard
                 </button>
               </div>
             </div>
-          )}
+            {selectedCssStyle === CssStyleList.css && (
+              <div className={styles.codeRight}>
+                <Editor
+                  defaultLanguage="css"
+                  theme="vs-dark"
+                  value={cssCode}
+                  onChange={cssCodeChange}
+                  width={450}
+                  height={450}
+                  options={{
+                    minimap: {
+                      // 关闭代码缩略图
+                      enabled: false // 是否启用预览图
+                    }
+                  }}
+                />
+                <Spacer axis="vertical" size={12} />
+                <div className={styles.buttonLayout}>
+                  <button className={styles.copyButton} onClick={copyCssToClipboard}>
+                    Copy Css to clipboard
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className={styles.buttonLayout}>
+            <button className={styles.copyButton} onClick={downloadFile}>
+              组件下载
+            </button>
+          </div>
         </div>
       </div>
 
       <div className={styles.module}>
-        <h2 className={styles.heading}>Settings</h2>
+        <h2 className={styles.heading}>设置</h2>
 
         <Spacer axis="vertical" size={12} />
 
@@ -203,18 +210,10 @@ const App: React.FC = () => {
       </div>
 
       <div className={styles.module}>
-        <h2 className={styles.heading}>Preview</h2>
+        <h2 className={styles.heading}>预览</h2>
         <Preview code={previewCode} scope={{ StyleSupportComponent }} />
       </div>
 
-      <div className={styles.module}>
-        <h2 className={styles.heading}>Component Download</h2>
-        <div className={styles.buttonLayout}>
-          <button className={styles.copyButton} onClick={downloadFile}>
-            Download
-          </button>
-        </div>
-      </div>
       {/* <div onClick={() => downloadFile()}>test download</div> */}
     </div>
   )

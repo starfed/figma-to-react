@@ -19,10 +19,11 @@ input {
 
 .wrapper {
   padding: 20px;
+  padding-top: 0;
 }
 
 .code {
-  padding: 20px;
+  padding: 5px;
   background-color: #f0f0f0;
 }
 
@@ -31,9 +32,13 @@ input {
   justify-content: space-between;
   width: 100%;
 }
+.codeRight {
+  margin-left: 15px;
+}
 
-.module {
-  padding: 20px;
+.module h2 {
+  margin-top: 20px;
+  font-size: 24px;
 }
 
 .heading {
