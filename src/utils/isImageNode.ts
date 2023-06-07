@@ -3,7 +3,7 @@ export function isImageNode(node: SceneNode): boolean {
   if ('children' in node && node.children.length > 0) {
     let hasOnlyVector = true
     node.children.forEach((child) => {
-      if (child.type !== 'VECTOR') {
+      if (child.type !== 'VECTOR' && child.type !== 'GROUP') {
         hasOnlyVector = false
       }
     })

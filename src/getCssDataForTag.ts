@@ -291,7 +291,7 @@ function buildColorString(paint: Paint) {
     return `#${rgbValueToHex(paint.color.r)}${rgbValueToHex(paint.color.g)}${rgbValueToHex(paint.color.b)}`
   } else if (paint.type === 'GRADIENT_LINEAR') {
     const linearGradient = figmaGradientToCSS(paint)
-    console.log(linearGradient)
+
     return linearGradient
   }
 

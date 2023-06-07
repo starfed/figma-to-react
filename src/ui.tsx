@@ -217,8 +217,6 @@ const App: React.FC = () => {
         <h2 className={styles.heading}>预览</h2>
         <Preview code={previewCode} scope={{ StyleSupportComponent }} />
       </div>
-
-      {/* <div onClick={() => downloadFile()}>test download</div> */}
     </div>
   )
 }
