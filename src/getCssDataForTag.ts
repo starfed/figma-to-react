@@ -53,8 +53,20 @@ const textDecorationCssValues = {
   STRIKETHROUGH: 'line-through'
 }
 
+const isFrameNoAutoLayout = (node: SceneNode) => {
+  return node.type === 'FRAME' && node.layoutMode === 'NONE'
+}
+
 const isAbsoluteNode = (node: SceneNode) => {
-  return node.visible && 'layoutPositioning' in node && node.layoutPositioning === 'ABSOLUTE'
+  let result = false
+  if (node.visible) {
+    if ('layoutPositioning' in node && node.layoutPositioning === 'ABSOLUTE') {
+      result = true
+    } else if (node.parent && isFrameNoAutoLayout(node.parent as SceneNode)) {
+      result = true
+    }
+  }
+  return result
 }
 
 function childrenHasAbsolute(p: SceneNode) {
