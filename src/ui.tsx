@@ -7,6 +7,7 @@ import { IdentifyComponentType } from './buildCode'
 import styles from './ui.css'
 import Spacer from './ui/Spacer'
 import { UserComponentSetting } from './userComponentSetting'
+import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live'
 //import { saveAs } from 'file-saver'
 function escapeHtml(str: string) {
   str = str.replace(/&/g, '&amp;')
@@ -98,7 +99,126 @@ const App: React.FC = () => {
     setIdentifyComponent(String(event.target.value) as IdentifyComponentType)
   }
 
+  const extractReturnContent = (codeString: any) => {
+    const match = codeString.match(/return\s*\(([\s\S]*?)\)/)
+    if (match && match[1]) {
+      return match[1]
+    }
+    return ''
+  }
+
+  type CssObject = {
+    [selector: string]: {
+      [property: string]: string
+    }
+  }
+
+  function cssStringToObject(cssString: string): CssObject {
+    console.log("cssString: ", cssString); // Add this line
+    const cssObj: CssObject = {};
+    const rules = cssString.split("}").filter((rule) => rule && rule.trim().length > 0);
+  
+    rules.forEach((rule) => {
+      const [selector, properties] = rule.split("{");
+      const cleanedSelector = selector.trim();
+      const propertyList = properties
+        .trim()
+        .split(";")
+        .filter((property) => property && property.trim().length > 0);
+  
+      cssObj[cleanedSelector] = {};
+  
+      propertyList.forEach((property) => {
+        const [key, value] = property.split(":");
+        const cleanedKey = key.trim().replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
+        const cleanedValue = value.trim();
+        cssObj[cleanedSelector][cleanedKey] = cleanedValue;
+      });
+    });
+    return cssObj;
+  }
+
+  function extractStylesObject(jsxString: string): Record<string, string> {
+    const importStylesRegex = /import styles from ['"]\.\/index.css['"];/
+    const stylesObjectRegex = /className={styles\.([\w-]+)}/g
+
+    if (!importStylesRegex.test(jsxString)) {
+      throw new Error('Unable to find "import styles from \'./index.css\';" in the provided JSX string.')
+    }
+
+    const stylesObject: Record<string, string> = {}
+
+    let match: RegExpExecArray | null
+    while ((match = stylesObjectRegex.exec(jsxString)) !== null) {
+      const className = `.${match[1]}`
+      const styleKey = match[1]
+      stylesObject[className] = styleKey
+    }
+
+    if (Object.keys(stylesObject).length === 0) {
+      throw new Error('Unable to find "className={styles.*}" in the provided JSX string.')
+    }
+
+    return stylesObject
+  }
+
+  function applyInlineStyles(cssString: string, jsxString: string): string {
+    console.log("cssString before calling cssStringToObject: ", cssString); // Add this line
+    const cssObject = cssStringToObject(cssString)
+    const stylesObject = extractStylesObject(jsxString)
+
+    const modifiedJsxString = Object.entries(stylesObject).reduce((acc, [className, styleKey]) => {
+      const style = cssObject[`${className}`]
+
+      if (style) {
+        if (style.backgroundImage) {
+          style.backgroundColor = '#eee'
+          delete style.backgroundImage
+        }
+
+        const styleObjStr = JSON.stringify(style).replace(/"/g, "'")
+        const styleReplacement = `style={${styleObjStr}}`
+        const styleKeyPattern = new RegExp(`{styles.${styleKey}}`, 'g')
+
+        return acc.replace(styleKeyPattern, styleReplacement)
+      }
+
+      return acc
+    }, jsxString)
+    console.log('convertSelfClosingToPair(modifiedJsxString): ', convertSelfClosingToPair(modifiedJsxString));
+
+    return convertSelfClosingToPair(modifiedJsxString)
+  }
+
+  function convertSelfClosingToPair(jsxString: string): string {
+    const selfClosingDivPattern = /<div([^>]*)\/>/g
+    return jsxString.replace(selfClosingDivPattern, '<div$1></div>')
+  }
+
+  function prepareCodeForReactLive(code: string): string {
+    // 删除import styles语句
+    const importStylesRegex = /import styles from ['"]\.\/index.css['"];\s*/
+    const cleanedCode = code.replace(importStylesRegex, '')
+
+    // 将“className=style”替换为“style”
+    const classNameStyleRegex = /className=style=/g
+    const codeWithStyle = cleanedCode.replace(classNameStyleRegex, 'style=')
+
+    // 提取return()里面的内容
+    const returnContentRegex = /return\s*\(([\s\S]*?)\)/
+    const returnContentMatch = codeWithStyle.match(returnContentRegex)
+
+    if (returnContentMatch && returnContentMatch[1]) {
+      const jsxContent = returnContentMatch[1]
+      return jsxContent
+    }
+
+    console.log('codeWithStyle212: ', codeWithStyle)
+    return codeWithStyle
+  }
+
   const syntaxHighlightedComponentCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(componentCode)), [componentCode])
+
   const syntaxHighlightedCssCode = React.useMemo(() => insertSyntaxHighlightText(escapeHtml(cssCode)), [cssCode])
   // set initial values taken from figma storage
   React.useEffect(() => {
@@ -109,6 +229,7 @@ const App: React.FC = () => {
       setCode(codeStr)
       setComponentCode(event.data.pluginMessage.generatedCodeStr)
       setCssCode(event.data.pluginMessage.cssString)
+      console.log('event.data.pluginMessage.cssString: ', event.data.pluginMessage.cssString);
       setUserComponentSettings(event.data.pluginMessage.userComponentSettings)
     }
   }, [])
@@ -116,10 +237,24 @@ const App: React.FC = () => {
   return (
     <div>
       <div className={styles.code}>
-        <textarea className={styles.textareaForClipboard} ref={textComponentRef} value={componentCode} readOnly />
+        <div className={styles.codeContent}>
+          <div className={styles.codeLeft}>
+            <textarea className={styles.textareaForClipboard} ref={textComponentRef} value={componentCode} readOnly />
+            <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedComponentCode }} />
+          </div>
+          {cssCode && componentCode && (
+            <div className={styles.codeRight}>
+              <LiveProvider code={prepareCodeForReactLive(applyInlineStyles(cssCode, componentCode))}>
+                {/* <LiveProvider code={`const Livematch = () => {{/* <LiveEditor /> */}
+                <LiveError />
+                <LivePreview />
+              </LiveProvider>
+              {/* <div dangerouslySetInnerHTML={{ __html: extractReturnContent(syntaxHighlightedComponentCode) }} >
 
-        <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedComponentCode }} />
-
+            </div> */}
+            </div>
+          )}
+        </div>
         <Spacer axis="vertical" size={12} />
 
         <div className={styles.buttonLayout}>
@@ -148,16 +283,6 @@ const App: React.FC = () => {
 
         <Spacer axis="vertical" size={12} />
 
-        {/* <div className={styles.optionList}>
-          {cssStyles.map((style) => (
-            <div key={style.value} className={styles.option}>
-              <input type="radio" name="css-style" id={style.value} value={style.value} checked={selectedCssStyle === style.value} onChange={notifyChangeCssStyle} />
-              <label htmlFor={style.value}>{style.label}</label>
-            </div>
-          ))}
-          
-        </div> */}
-
         <div className={styles.optionList}>
           {IdentifyComponent.map((v) => (
             <div key={v.value} className={styles.option}>
@@ -175,26 +300,8 @@ const App: React.FC = () => {
         </div>
 
         <Spacer axis="vertical" size={12} />
-
-        {/* <div className={styles.optionList}>
-          {unitTypes.map((unitType) => (
-            <div key={unitType.value} className={styles.option}>
-              <input type="radio" name="unit-type" id={unitType.value} value={unitType.value} checked={selectedUnitType === unitType.value} onChange={notifyChangeUnitType} />
-              <label htmlFor={unitType.value}>{unitType.label}</label>
-            </div>
-          ))}
-        </div> */}
-
         <Spacer axis="vertical" size={12} />
-
-        {/* <UserComponentSettingList
-          settings={userComponentSettings}
-          onAdd={onAddUserComponentSetting}
-          onDelete={onDeleteUserComponentSetting}
-          onUpdate={onUpdateUserComponentSetting}
-        /> */}
       </div>
-      {/* <div onClick={() => downloadFile()}>test download</div> */}
     </div>
   )
 }

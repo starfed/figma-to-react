@@ -1,5 +1,5 @@
 import { createFigma } from 'figma-api-stub'
-import { buildCode } from './buildCode'
+import { IdentifyComponentType, buildCode } from './buildCode'
 import { buildTagTree } from './buildTagTree'
 import { TextCount } from './getCssDataForTag'
 import { modifyTreeForComponent } from './modifyTreeForComponent'
@@ -34,7 +34,7 @@ describe('when css style is pure CSS', () => {
   test('Frame without children should render only one tag', async () => {
     const frameNode = createFrameWithDefaultProperties(figma)
 
-    const tag = await modifyTreeForComponent(buildTagTree(frameNode, 'px', new TextCount())!, figma)
+    const tag = await modifyTreeForComponent(buildTagTree(frameNode, 'px', new TextCount(), IdentifyComponentType.IdentifyComponent)!, figma)
     expect(buildCode(tag, 'css')).toBe(`const Test: React.FC = () => {
   return (
     <div className="test" />
@@ -47,7 +47,7 @@ describe('when css style is pure CSS', () => {
     const childNode = createFrameWithDefaultProperties(figma, { name: 'Child' })
     parentNode.appendChild(childNode)
 
-    const tag = await modifyTreeForComponent(buildTagTree(parentNode, 'px', new TextCount())!, figma)
+    const tag = await modifyTreeForComponent(buildTagTree(parentNode, 'px', new TextCount(), IdentifyComponentType.IdentifyComponent)!, figma)
     expect(buildCode(tag, 'css')).toBe(`const Parent: React.FC = () => {
   return (
     <div className="parent">
@@ -61,7 +61,7 @@ describe('when css style is pure CSS', () => {
     const characters = 'てすと'
     const textNode = createTextNodeWithDefaultProperties(figma, { name: 'Text', characters })
 
-    const tag = await modifyTreeForComponent(buildTagTree(textNode, 'px', new TextCount())!, figma)
+    const tag = await modifyTreeForComponent(buildTagTree(textNode, 'px', new TextCount(), IdentifyComponentType.IdentifyComponent)!, figma)
     expect(buildCode(tag, 'css')).toBe(`const Text: React.FC = () => {
   return (
     <p className="text-1">${characters}</p>
@@ -72,7 +72,7 @@ describe('when css style is pure CSS', () => {
   test('render Image node', async () => {
     const imageNode = createFrameWithDefaultProperties(figma, { name: 'Image', isImage: true })
 
-    const tag = await modifyTreeForComponent(buildTagTree(imageNode, 'px', new TextCount())!, figma)
+    const tag = await modifyTreeForComponent(buildTagTree(imageNode, 'px', new TextCount(), IdentifyComponentType.IdentifyComponent)!, figma)
     expect(buildCode(tag, 'css')).toBe(`const Img: React.FC = () => {
   return (
     <img src="" />
@@ -85,7 +85,7 @@ describe('when css style is styled-components', () => {
   test('Frame without children should render only one tag', async () => {
     const frameNode = createFrameWithDefaultProperties(figma)
 
-    const tag = await modifyTreeForComponent(buildTagTree(frameNode, 'px', new TextCount())!, figma)
+    const tag = await modifyTreeForComponent(buildTagTree(frameNode, 'px', new TextCount(), IdentifyComponentType.IdentifyComponent)!, figma)
     expect(buildCode(tag, 'styled-components')).toBe(`const Test: React.FC = () => {
   return (
     <Test />
@@ -98,7 +98,7 @@ describe('when css style is styled-components', () => {
     const childNode = createFrameWithDefaultProperties(figma, { name: 'Child' })
     parentNode.appendChild(childNode)
 
-    const tag = await modifyTreeForComponent(buildTagTree(parentNode, 'px', new TextCount())!, figma)
+    const tag = await modifyTreeForComponent(buildTagTree(parentNode, 'px', new TextCount(), IdentifyComponentType.IdentifyComponent)!, figma)
     expect(buildCode(tag, 'styled-components')).toBe(`const Parent: React.FC = () => {
   return (
     <Parent>
@@ -113,7 +113,7 @@ describe('when css style is styled-components', () => {
 
     const textNode = createTextNodeWithDefaultProperties(figma, { name: 'Text', characters })
 
-    const tag = await modifyTreeForComponent(buildTagTree(textNode, 'px', new TextCount())!, figma)
+    const tag = await modifyTreeForComponent(buildTagTree(textNode, 'px', new TextCount(), IdentifyComponentType.IdentifyComponent)!, figma)
     expect(buildCode(tag, 'styled-components')).toBe(`const Text: React.FC = () => {
   return (
     <Text>${characters}</Text>
@@ -124,7 +124,7 @@ describe('when css style is styled-components', () => {
   test('render Image node', async () => {
     const imageNode = createFrameWithDefaultProperties(figma, { name: 'Image', isImage: true })
 
-    const tag = await modifyTreeForComponent(buildTagTree(imageNode, 'px', new TextCount())!, figma)
+    const tag = await modifyTreeForComponent(buildTagTree(imageNode, 'px', new TextCount(), IdentifyComponentType.IdentifyComponent)!, figma)
     expect(buildCode(tag, 'styled-components')).toBe(`const Img: React.FC = () => {
   return (
     <img src="" />
@@ -139,7 +139,7 @@ test('render Frame with invisible node', async () => {
   childNode.visible = false
   parentNode.appendChild(childNode)
 
-  const tag = await modifyTreeForComponent(buildTagTree(parentNode, 'px', new TextCount())!, figma)
+  const tag = await modifyTreeForComponent(buildTagTree(parentNode, 'px', new TextCount(), IdentifyComponentType.IdentifyComponent)!, figma)
   expect(buildCode(tag, 'styled-components')).toBe(`const Parent: React.FC = () => {
   return (
     <Parent />

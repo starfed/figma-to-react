@@ -30,6 +30,19 @@ module.exports = (env, argv) => ({
             }
           }
         ]
+      },{
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              '@babel/preset-env',
+              // 任何其他您可能需要的预设，例如：'@babel/preset-react'
+            ],
+          },
+        },
       },
 
       // Allows you to use "<%= require('./file.svg') %>" in your HTML code to get a data URI
@@ -38,7 +51,7 @@ module.exports = (env, argv) => ({
   },
 
   // Webpack tries these extensions for you if you omit the extension like "import './file'"
-  resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js'] },
+  resolve: { extensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs'] },
 
   output: {
     filename: '[name].js',
