@@ -1,6 +1,7 @@
 import { buildSizeStringByUnit, UnitType } from './buildSizeStringByUnit'
 import { isImageNode } from './utils/isImageNode'
 
+import { decomposeTSR } from 'transformation-matrix'
 export type CSSData = {
   className: string
   properties: {
@@ -269,6 +270,17 @@ function rgbValueToHex(value: number) {
     .padStart(2, '0')
 }
 
+const getMatrix = (a: any) => {
+  return {
+    a: a[0],
+    b: a[1],
+    c: a[2],
+    d: a[3],
+    e: a[4],
+    f: a[5]
+  }
+}
+
 function figmaGradientToCSS(gradient: any) {
   const stops = gradient.gradientStops.map((stop: any) => {
     const { r, g, b, a } = stop.color
@@ -276,11 +288,14 @@ function figmaGradientToCSS(gradient: any) {
     return `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${a}) ${position}%`
   })
 
-  const [x1, y1] = gradient.gradientTransform[1].slice(0, 2).map((n: number) => n.toFixed(2))
-  const x2 = 1 - x1
-  const y2 = 1 - y1
+  const txf0 = gradient.gradientTransform[0]
+  const txf1 = gradient.gradientTransform[1]
 
-  return `linear-gradient(${Math.round((Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI)}deg, ${stops.join(', ')})`
+  const origin = decomposeTSR(getMatrix([...txf0, ...txf1]), true, true)
+  console.log(origin)
+  const angle = (origin.rotation.angle / Math.PI) * 180 - 90
+
+  return `linear-gradient(${angle}deg, ${stops.join(', ')})`
 }
 
 function buildColorString(paint: Paint) {
