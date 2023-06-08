@@ -8,7 +8,7 @@ import { buildCssString, CssStyle } from './buildCssString'
 import { UserComponentSetting } from './userComponentSetting'
 import { TextCount } from './getCssDataForTag'
 
-figma.showUI(__html__, { width: 980, height: 780 })
+figma.showUI(__html__, { width: 1080, height: 780 })
 
 const selectedNodes = figma.currentPage.selection
 
@@ -16,11 +16,11 @@ async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType
   console.log(node, config.identifyComponent)
   let cssStyle = config.cssStyle
   if (!cssStyle) {
-    cssStyle = await figma.clientStorage.getAsync(STORAGE_KEYS.CSS_STYLE_KEY)
+    // cssStyle = await figma.clientStorage.getAsync(STORAGE_KEYS.CSS_STYLE_KEY)
 
-    if (!cssStyle) {
+    // if (!cssStyle) {
       cssStyle = 'css'
-    }
+    // }
   }
 
   if (!config.identifyComponent) {

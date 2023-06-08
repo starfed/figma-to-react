@@ -238,14 +238,15 @@ const App: React.FC = () => {
     <div>
       <div className={styles.code}>
         <div className={styles.codeContent}>
-          <div className={styles.codeLeft}>
+          {/* <div className={styles.codeLeft}>
             <textarea className={styles.textareaForClipboard} ref={textComponentRef} value={componentCode} readOnly />
             <p className={styles.generatedCode} dangerouslySetInnerHTML={{ __html: syntaxHighlightedComponentCode }} />
-          </div>
+          </div> */}
           {cssCode && componentCode && (
-            <div className={styles.codeRight}>
+            <div className={styles.codeLeft}>
               <LiveProvider code={prepareCodeForReactLive(applyInlineStyles(cssCode, componentCode))}>
                 {/* <LiveProvider code={`const Livematch = () => {{/* <LiveEditor /> */}
+                <LiveEditor /> 
                 <LiveError />
                 <LivePreview />
               </LiveProvider>
@@ -254,11 +255,6 @@ const App: React.FC = () => {
             </div> */}
             </div>
           )}
-          <div className={styles.codeRight}>
-            <p>
-              A place to show preview
-            </p>
-          </div>
         </div>
         <Spacer axis="vertical" size={12} />
 
