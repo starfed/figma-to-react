@@ -254,6 +254,11 @@ const App: React.FC = () => {
             </div> */}
             </div>
           )}
+          <div className={styles.codeRight}>
+            <p>
+              A place to show preview
+            </p>
+          </div>
         </div>
         <Spacer axis="vertical" size={12} />
 

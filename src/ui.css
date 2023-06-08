@@ -18,6 +18,26 @@ input {
   padding: 20px;
   background-color: #f0f0f0;
 }
+.codeContent {
+  display: flex;
+  justify-content: space-between;
+}
+
+.codeLeft {
+  flex: 1;
+}
+
+.codeRight {
+  width: 250px;
+  margin-left: 20px;
+  height: auto;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 8px;
+}
 
 .settings {
   padding: 20px;
