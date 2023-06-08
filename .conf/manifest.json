@@ -1,0 +1,8 @@
+{
+  "name": "Figma to React Beta",
+  "id": "1248445556317839283",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"]
+}

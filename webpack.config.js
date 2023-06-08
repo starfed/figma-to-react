@@ -1,7 +1,7 @@
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
-
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = (env, argv) => ({
   mode: argv.mode === 'production' ? 'production' : 'development',
 
@@ -59,6 +59,7 @@ module.exports = (env, argv) => ({
       inlineSource: '.(js)$',
       chunks: ['ui']
     }),
-    new HtmlWebpackInlineSourcePlugin()
+    new HtmlWebpackInlineSourcePlugin(),
+    new CopyWebpackPlugin([{ from: './.conf/manifest.json', to: './' }])
   ]
 })
