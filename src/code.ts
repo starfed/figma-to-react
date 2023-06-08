@@ -78,7 +78,7 @@ async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType
 
   const textCount = new TextCount()
 
-  const originalTagTree = buildTagTree(node, unitType, textCount, config.identifyComponent, true)
+  const originalTagTree = buildTagTree(node, unitType, textCount, config.identifyComponent, 0)
   if (originalTagTree === null) {
     figma.notify('Please select a visible node')
     return

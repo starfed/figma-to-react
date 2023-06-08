@@ -79,16 +79,16 @@ function childrenHasAbsolute(p: SceneNode) {
   return false
 }
 
-export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount: TextCount, root: boolean): CSSData {
+export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount: TextCount, level: number, childrenIndex: number): CSSData {
   const properties: CSSData['properties'] = []
-  if (childrenHasAbsolute(node)) {
-    properties.push({ name: 'position', value: 'relative' })
-  }
+  const root = level === 0
   // absolute positon
   if (!root && isAbsoluteNode(node)) {
     properties.push({ name: 'position', value: 'absolute' })
     properties.push({ name: 'left', value: node.x + 'px' })
     properties.push({ name: 'top', value: node.y + 'px' })
+  } else if (childrenHasAbsolute(node)) {
+    properties.push({ name: 'position', value: 'relative' })
   }
   // skip vector since it's often displayed as an img tag
   if (node.visible && node.type !== 'VECTOR') {
@@ -240,7 +240,7 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
   }
 
   if (properties.length > 0) {
-    let className = node.name
+    let className = node.name + level + childrenIndex
 
     if (isImageNode(node)) {
       properties.push({ name: 'background-image', value: `url(https://via.placeholder.com/${node.width.toFixed(0)}x${node.height.toFixed(0)})` })
