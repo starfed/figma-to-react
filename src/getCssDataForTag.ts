@@ -79,13 +79,13 @@ function childrenHasAbsolute(p: SceneNode) {
   return false
 }
 
-export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount: TextCount): CSSData {
+export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount: TextCount, root: boolean): CSSData {
   const properties: CSSData['properties'] = []
   if (childrenHasAbsolute(node)) {
     properties.push({ name: 'position', value: 'relative' })
   }
   // absolute positon
-  if (isAbsoluteNode(node)) {
+  if (!root && isAbsoluteNode(node)) {
     properties.push({ name: 'position', value: 'absolute' })
     properties.push({ name: 'left', value: node.x + 'px' })
     properties.push({ name: 'top', value: node.y + 'px' })

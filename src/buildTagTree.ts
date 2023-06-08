@@ -23,7 +23,7 @@ export type Tag = {
   isComponent?: boolean
 }
 
-export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: TextCount, identifyComponent: IdentifyComponentType): Tag | null {
+export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: TextCount, identifyComponent: IdentifyComponentType, root = false): Tag | null {
   if (!node.visible) {
     return null
   }
@@ -51,7 +51,7 @@ export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: Tex
     isInstance: identifyComponent === IdentifyComponentType.IdentifyComponent ? node.type === 'INSTANCE' : false,
     textCharacters: node.type === 'TEXT' ? node.characters : null,
     isImg,
-    css: getCssDataForTag(node, unitType, textCount),
+    css: getCssDataForTag(node, unitType, textCount, root),
     properties,
     children: childTags,
     node
