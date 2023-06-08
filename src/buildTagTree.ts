@@ -23,14 +23,7 @@ export type Tag = {
   isComponent?: boolean
 }
 
-export function buildTagTree(
-  node: SceneNode,
-  unitType: UnitType,
-  textCount: TextCount,
-  identifyComponent: IdentifyComponentType,
-  level: number,
-  childrenIndex: number
-): Tag | null {
+export function buildTagTree(node: SceneNode, unitType: UnitType, textCount: TextCount, identifyComponent: IdentifyComponentType, level = 0, childrenIndex = 0): Tag | null {
   if (!node.visible) {
     return null
   }
