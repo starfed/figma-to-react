@@ -6,8 +6,10 @@ const startWithNumber = (s: string) => {
 }
 export function buildClassName(className: string, textIndex?: number): string {
   const index = textIndex ? textIndex?.toString() : ''
-  if (startWithNumber(className)) className = 's' + className
-  return className.replace(specialLetterReg, '') + index
+
+  let n = className.replace(specialLetterReg, '') + index
+  if (startWithNumber(n)) n = 's' + n
+  return n
 }
 
 export function getRightName(tagName: string) {
