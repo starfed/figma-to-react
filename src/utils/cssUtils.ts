@@ -12,7 +12,7 @@ export function getRightName(tagName: string) {
 }
 
 export function getPageWidth(width: number) {
-  width = Number(width)
+  width = Math.round(Number(width))
 
   if (width < 980) {
     return 980
