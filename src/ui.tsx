@@ -21,7 +21,7 @@ const IdentifyComponent = [
   { value: IdentifyComponentType.IgnoreComponent, label: '不识别子节点是否为组件' }
 ]
 
-const App: React.FC = () => {
+const App = () => {
   const [previewCode, setPreviewCode] = React.useState('')
   const [componentCode, setComponentCode] = React.useState('')
   const [cssCode, setCssCode] = React.useState('')

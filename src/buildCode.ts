@@ -132,7 +132,7 @@ export function buildCode(tag: Tag, css: CssStyle): string {
   const componentName = 'Index' //capitalizeFirstLetter(tag.name)
   return `${cssImport}
   ${buildImportString(tag)}
-  const ${componentName}: React.FC = () => {
+  const ${componentName} = () => {
   return (
     ${buildJsxString(tag, css, 0)}
   )

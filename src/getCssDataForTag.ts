@@ -200,7 +200,8 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
         readonly value: number
         readonly unit: 'PIXELS' | 'PERCENT'
       }
-
+      //properties.push({ name: 'height', value: Math.floor(node.height) + 'px' })
+      properties.push({ name: 'width', value: Math.floor(node.width) + 'px' })
       properties.push({
         name: 'line-height',
         value:
