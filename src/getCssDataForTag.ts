@@ -69,6 +69,16 @@ const isAbsoluteNode = (node: SceneNode) => {
   return result
 }
 
+const getStyleByStyleId = (styleId: string) => {
+  if (styleId) {
+    const style = figma.getStyleById(styleId)
+    console.log(style)
+    if (style) {
+      return style
+    }
+  }
+}
+
 function childrenHasAbsolute(p: SceneNode) {
   if ('children' in p) {
     const children = p.children
@@ -103,6 +113,10 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
       const borderRadiusValue = getBorderRadiusString(node, unitType)
       if (borderRadiusValue) {
         properties.push({ name: 'border-radius', value: borderRadiusValue })
+      }
+
+      if (node.clipsContent) {
+        properties.push({ name: 'overflow', value: 'hidden' })
       }
 
       if (node.layoutMode !== 'NONE') {
@@ -203,7 +217,7 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
         readonly unit: 'PIXELS' | 'PERCENT'
       }
       //properties.push({ name: 'height', value: Math.floor(node.height) + 'px' })
-      properties.push({ name: 'width', value: Math.floor(node.width) + 'px' })
+      properties.push({ name: 'width', value: Math.floor(node.width + 15) + 'px' })
       properties.push({
         name: 'line-height',
         value:
