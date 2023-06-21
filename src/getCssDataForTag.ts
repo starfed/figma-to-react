@@ -173,7 +173,9 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
 
       if ((node.fills as Paint[]).length > 0 && (node.fills as Paint[])[0].type !== 'IMAGE') {
         const paint = (node.fills as Paint[])[0]
-        properties.push({ name: 'background-color', value: buildColorString(paint) })
+        const value = buildColorString(paint)
+        const name = value.includes('linear-gradient') ? 'background' : 'background-color'
+        properties.push({ name, value })
       }
 
       if ((node.strokes as Paint[]).length > 0) {
@@ -304,8 +306,8 @@ function figmaGradientToCSS(gradient: any) {
   const txf0 = gradient.gradientTransform[0]
   const txf1 = gradient.gradientTransform[1]
 
-  const origin = decomposeTSR(getMatrix([...txf0, ...txf1]), true, true)
-  console.log(origin)
+  const origin = decomposeTSR(getMatrix([...txf0, ...txf1]))
+  console.log(origin.rotation.angle / Math.PI, (origin.rotation.angle * 180) / Math.PI)
   const angle = (origin.rotation.angle / Math.PI) * 180 - 90
 
   return `linear-gradient(${angle}deg, ${stops.join(', ')})`
