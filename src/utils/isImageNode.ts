@@ -7,6 +7,7 @@ export function isImageNode(node: SceneNode): boolean {
       if (child.type !== 'VECTOR' && child.type !== 'GROUP') {
         hasOnlyVector = false
       }
+
       if (child.type === 'VECTOR') {
         hasVector = true
       }
@@ -19,7 +20,7 @@ export function isImageNode(node: SceneNode): boolean {
     return true
   }
   if (node.type === 'FRAME' || node.type === 'RECTANGLE') {
-    if ((node.fills as Paint[]).find((paint) => paint.type === 'IMAGE') !== undefined) {
+    if ((node.fills as Paint[]).find((paint) => paint.type === 'IMAGE' && paint.visible) !== undefined) {
       return true
     }
   }

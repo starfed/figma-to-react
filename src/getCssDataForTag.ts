@@ -54,7 +54,7 @@ const textDecorationCssValues = {
 }
 
 const isFrameNoAutoLayout = (node: SceneNode) => {
-  return node.type === 'FRAME' && node.layoutMode === 'NONE'
+  return ['FRAME', 'INSTANCE', 'COMPONENT'].includes(node.type) && node?.layoutMode === 'NONE'
 }
 
 const isAbsoluteNode = (node: SceneNode) => {
@@ -95,11 +95,12 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
   // absolute positon
   if (!root && isAbsoluteNode(node)) {
     properties.push({ name: 'position', value: 'absolute' })
-    properties.push({ name: 'left', value: node.x + 'px' })
-    properties.push({ name: 'top', value: node.y + 'px' })
+    properties.push({ name: 'left', value: node.x.toFixed(0) + 'px' })
+    properties.push({ name: 'top', value: node.y.toFixed(0) + 'px' })
   } else if (childrenHasAbsolute(node)) {
     properties.push({ name: 'position', value: 'relative' })
   }
+
   // skip vector since it's often displayed as an img tag
   if (node.visible && node.type !== 'VECTOR') {
     if ('opacity' in node && (node?.opacity || 1) < 1) {
@@ -164,7 +165,7 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
         const paint = (node.fills as Paint[])[0]
         const value = buildColorString(paint)
         const name = value.includes('linear-gradient') ? 'background' : 'background-color'
-        if (paint.visible) properties.push({ name, value })
+        if (paint.visible && value) properties.push({ name, value })
       }
 
       if ((node.strokes as Paint[]).length > 0) {
@@ -189,7 +190,7 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
         const paint = (node.fills as Paint[])[0]
         const value = buildColorString(paint)
         const name = value.includes('linear-gradient') ? 'background' : 'background-color'
-        properties.push({ name, value })
+        value && properties.push({ name, value })
       }
 
       if ((node.strokes as Paint[]).length > 0) {
@@ -204,8 +205,8 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
     if (node.type === 'TEXT') {
       properties.push({ name: 'text-align', value: textAlignCssValues[node.textAlignHorizontal] })
       properties.push({ name: 'vertical-align', value: textVerticalAlignCssValues[node.textAlignVertical] })
-      properties.push({ name: 'font-size', value: `${node.fontSize as number}px` })
-      properties.push({ name: 'font-family', value: (node.fontName as FontName).family })
+      properties.push({ name: 'font-size', value: `${node.fontSize?.toFixed(0) as number}px` })
+      properties.push({ name: 'font-family', value: `"${(node.fontName as FontName).family}"` })
 
       const letterSpacing = node.letterSpacing as LetterSpacing
       if (letterSpacing.value !== 0) {
@@ -217,7 +218,7 @@ export function getCssDataForTag(node: SceneNode, unitType: UnitType, textCount:
         readonly unit: 'PIXELS' | 'PERCENT'
       }
       //properties.push({ name: 'height', value: Math.floor(node.height) + 'px' })
-      properties.push({ name: 'width', value: Math.floor(node.width + 15) + 'px' })
+      properties.push({ name: 'width', value: Math.floor(node.width + 20) + 'px' })
       properties.push({
         name: 'line-height',
         value:
@@ -314,7 +315,7 @@ function figmaGradientToCSS(gradient: any) {
   const stops = gradient.gradientStops.map((stop: any) => {
     const { r, g, b, a } = stop.color
     const position = stop.position * 100
-    return `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${a}) ${position}%`
+    return `rgba(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)}, ${a.toFixed(1)}) ${position}%`
   })
 
   const txf0 = gradient.gradientTransform[0]
@@ -330,7 +331,8 @@ function figmaGradientToCSS(gradient: any) {
 function buildColorString(paint: Paint) {
   if (paint.type === 'SOLID') {
     if (paint.opacity !== undefined && paint.opacity < 1) {
-      return `rgba(${Math.floor(paint.color.r * 255)}, ${Math.floor(paint.color.g * 255)}, ${Math.floor(paint.color.b * 255)}, ${paint.opacity})`
+      console.log(paint)
+      return `rgba(${Math.floor(paint.color.r * 255)}, ${Math.floor(paint.color.g * 255)}, ${Math.floor(paint.color.b * 255)}, ${paint.opacity.toFixed(1)})`
     }
     return `#${rgbValueToHex(paint.color.r)}${rgbValueToHex(paint.color.g)}${rgbValueToHex(paint.color.b)}`
   } else if (paint.type === 'GRADIENT_LINEAR') {

@@ -9,19 +9,30 @@ import { UserComponentSetting } from './userComponentSetting'
 import { TextCount } from './getCssDataForTag'
 import { getPageWidth, getRightName } from './utils/cssUtils'
 
-const selectedNodes = figma.currentPage.selection
-
-if (selectedNodes.length > 1) {
-  figma.notify('Please select only 1 node')
-  figma.closePlugin()
-} else if (selectedNodes.length === 0) {
-  figma.notify('Please select a node')
-  figma.closePlugin()
-} else {
-  const node = selectedNodes[0]
-  figma.showUI(__html__, { width: getPageWidth(node.width), height: 800 })
-  generate(node, {})
+const run = (init = false) => {
+  const selectedNodes = figma.currentPage.selection
+  if (selectedNodes.length > 1) {
+    figma.notify('Please select only 1 node')
+    figma.closePlugin()
+  } else if (selectedNodes.length === 0) {
+    figma.notify('Please select a node')
+    figma.closePlugin()
+  } else {
+    const node = selectedNodes[0]
+    if (!init) {
+      generate(node, {})
+    } else {
+      figma.showUI(__html__, { width: getPageWidth(node.width), height: 800 })
+      generate(node, {})
+    }
+  }
 }
+
+run(true)
+
+figma.on('selectionchange', () => {
+  run()
+})
 
 figma.ui.onmessage = (msg: messageTypes) => {
   if (msg.type === 'notify-copy-success') {

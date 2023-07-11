@@ -27,7 +27,7 @@ export const StyleSupportComponent = (props: { styles: string; children: any }) 
           if (width) setScale(600 / width)
         }
       }
-    }, 100)
+    }, 0)
   }, [children])
   return (
     <div>

@@ -202,7 +202,7 @@ const App = () => {
         </div>
       </div>
 
-      {/* <div className={styles.module}>
+      <div className={styles.module}>
         <h2 className={styles.heading}>设置</h2>
 
         <Spacer axis="vertical" size={12} />
@@ -231,7 +231,7 @@ const App = () => {
             </div>
           ))}
         </div>
-      </div> */}
+      </div>
 
       <div className={styles.module}>
         <h2 className={styles.heading}>预览</h2>
