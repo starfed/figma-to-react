@@ -15,10 +15,27 @@ export default Preview
 
 export const StyleSupportComponent = (props: { styles: string; children: any }) => {
   const { styles, children } = props
+  const [scale, setScale] = React.useState(1)
+  const pref = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      if (pref.current) {
+        const e: any = pref.current.childNodes[0]
+        if (e) {
+          const width = e.offsetWidth
+          if (width) setScale(600 / width)
+        }
+      }
+    }, 100)
+  }, [children])
   return (
     <div>
       <style>{styles}</style>
-      {children}
+
+      <div ref={pref} style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}>
+        {children}
+      </div>
     </div>
   )
 }

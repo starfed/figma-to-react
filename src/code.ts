@@ -4,7 +4,7 @@ import { UnitType } from './buildSizeStringByUnit'
 import { modifyTreeForComponent } from './modifyTreeForComponent'
 import { buildCode, IdentifyComponentType } from './buildCode'
 import { buildTagTree } from './buildTagTree'
-import { buildCssString, CssStyle } from './buildCssString'
+import { buildCssString, CssStyle, CssStyleList } from './buildCssString'
 import { UserComponentSetting } from './userComponentSetting'
 import { TextCount } from './getCssDataForTag'
 import { getPageWidth, getRightName } from './utils/cssUtils'
@@ -50,19 +50,13 @@ figma.ui.onmessage = (msg: messageTypes) => {
 async function generate(node: SceneNode, config: { cssStyle?: CssStyle; unitType?: UnitType; identifyComponent?: IdentifyComponentType }) {
   console.log(node)
   let cssStyle = config.cssStyle
-  if (!cssStyle) {
-    cssStyle = await figma.clientStorage.getAsync(STORAGE_KEYS.CSS_STYLE_KEY)
 
-    if (!cssStyle) {
-      cssStyle = 'css'
-    }
+  if (!cssStyle) {
+    cssStyle = CssStyleList.tailwind
   }
 
   if (!config.identifyComponent) {
-    config.identifyComponent = await figma.clientStorage.getAsync(STORAGE_KEYS.IDENTIFY_COMPONENT)
-    if (!config.identifyComponent) {
-      config.identifyComponent = IdentifyComponentType.IdentifyComponent
-    }
+    config.identifyComponent = IdentifyComponentType.IgnoreComponent
   }
 
   let unitType = config.unitType

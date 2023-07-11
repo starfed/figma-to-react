@@ -11,7 +11,7 @@ export function isImageNode(node: SceneNode): boolean {
         hasVector = true
       }
     })
-    if (hasOnlyVector) {
+    if (hasVector && hasOnlyVector) {
       return true
     }
     //if (node.type === 'GROUP' && hasVector) return true

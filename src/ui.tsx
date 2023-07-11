@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDom from 'react-dom'
 import { CssStyle, CssStyleList } from './buildCssString'
-
+import * as prettier from 'prettier'
 import { messageTypes } from './messagesTypes'
 import { IdentifyComponentType } from './buildCode'
 import styles from './ui.css'
@@ -11,6 +11,12 @@ import copy from 'copy-to-clipboard'
 import Editor from '@monaco-editor/react'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
+import parserBabel from 'prettier/parser-babel'
+
+import { parse } from '@babel/parser'
+import traverse from '@babel/traverse'
+import MonacoJSXHighlighter from 'monaco-jsx-highlighter'
+
 const cssStyles: { value: CssStyleList; label: string }[] = [
   { value: CssStyleList.css, label: CssStyleList.css },
   { value: CssStyleList.tailwind, label: CssStyleList.tailwind }
@@ -26,9 +32,19 @@ const App = () => {
   const [componentCode, setComponentCode] = React.useState('')
   const [cssCode, setCssCode] = React.useState('')
   const [componentName, setComponentName] = React.useState('')
-  const [selectedCssStyle, setCssStyle] = React.useState<CssStyle>('css')
-  const [selectedIdentifyComponent, setIdentifyComponent] = React.useState(IdentifyComponentType.IdentifyComponent)
+  const [selectedCssStyle, setCssStyle] = React.useState<CssStyle>(CssStyleList.tailwind)
+  const [selectedIdentifyComponent, setIdentifyComponent] = React.useState(IdentifyComponentType.IgnoreComponent)
 
+  function handleEditorDidMount(editor: any, monaco: any) {
+    // here is another way to get monaco instance
+    // you can also store it in `useRef` for further usage
+    // Instantiate the highlighter
+    const monacoJSXHighlighter = new MonacoJSXHighlighter(monaco, parse, traverse, editor)
+    // Activate highlighting (debounceTime default: 100ms)
+    monacoJSXHighlighter.highlightOnDidChangeModelContent(100)
+    // Activate JSX commenting
+    monacoJSXHighlighter.addJSXCommentCommand()
+  }
   const copyComponentToClipboard = () => {
     const msg: messageTypes = { type: 'notify-copy-success' }
     parent.postMessage({ pluginMessage: msg }, '*')
@@ -54,13 +70,15 @@ const App = () => {
     copy(cssCode)
   }
 
+  const getFomattedCode = (value: string) => {
+    return prettier.format(value || '', { semi: false, parser: 'babel', plugins: [parserBabel] })
+  }
+
   const componentCodeChange = (value?: string) => {
-    console.log(value)
     setComponentCode(value || '')
   }
 
   const cssCodeChange = (value?: string) => {
-    console.log(value)
     setCssCode(value || '')
   }
 
@@ -95,7 +113,7 @@ const App = () => {
         }
       }
       const code = innerString
-      pcode = ` <StyleSupportComponent styles='${styles}'  >${code}</StyleSupportComponent>`
+      pcode = `<StyleSupportComponent styles='${styles}'  >${code}</StyleSupportComponent>`
     }
 
     setPreviewCode(pcode)
@@ -106,9 +124,10 @@ const App = () => {
       console.log(event.data.pluginMessage)
       if (event.data.pluginMessage) {
         setCssStyle(event.data.pluginMessage.cssStyle)
-        setComponentCode(event.data.pluginMessage.generatedCodeStr)
         setCssCode(event.data.pluginMessage.cssString)
         setComponentName(event.data.pluginMessage.nodeName)
+        const fomattedCode: string = getFomattedCode(event.data.pluginMessage.generatedCodeStr)
+        setComponentCode(fomattedCode)
       }
     }
   }, [])
@@ -135,6 +154,7 @@ const App = () => {
                 value={componentCode}
                 onChange={componentCodeChange}
                 height={450}
+                onMount={handleEditorDidMount}
                 options={{
                   minimap: {
                     // 关闭代码缩略图
@@ -173,16 +193,16 @@ const App = () => {
               </div>
             )}
           </div>
-          <Spacer axis="vertical" size={12} />
+          {/* <Spacer axis="vertical" size={12} />
           <div className={styles.buttonLayout}>
             <button className={styles.copyButton} onClick={downloadFile}>
               组件下载
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 
-      <div className={styles.module}>
+      {/* <div className={styles.module}>
         <h2 className={styles.heading}>设置</h2>
 
         <Spacer axis="vertical" size={12} />
@@ -211,7 +231,7 @@ const App = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       <div className={styles.module}>
         <h2 className={styles.heading}>预览</h2>
