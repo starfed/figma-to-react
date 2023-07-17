@@ -19,7 +19,7 @@ export function isImageNode(node: SceneNode): boolean {
   } else if (node.type === 'VECTOR') {
     return true
   }
-  if (node.type === 'FRAME' || node.type === 'RECTANGLE') {
+  if (node.type === 'RECTANGLE') {
     if ((node.fills as Paint[]).find((paint) => paint.type === 'IMAGE' && paint.visible) !== undefined) {
       return true
     }
