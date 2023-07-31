@@ -153,7 +153,7 @@ const App = () => {
                 theme="vs-dark"
                 value={componentCode}
                 onChange={componentCodeChange}
-                height={450}
+                height={300}
                 onMount={handleEditorDidMount}
                 options={{
                   minimap: {
@@ -165,7 +165,7 @@ const App = () => {
               <Spacer axis="vertical" size={12} />
               <div className={styles.buttonLayout}>
                 <button className={styles.copyButton} onClick={copyComponentToClipboard}>
-                  Copy Component to clipboard
+                  Copy Component
                 </button>
               </div>
             </div>
@@ -176,7 +176,7 @@ const App = () => {
                   theme="vs-dark"
                   value={cssCode}
                   onChange={cssCodeChange}
-                  height={450}
+                  height={300}
                   options={{
                     minimap: {
                       // 关闭代码缩略图
@@ -202,7 +202,7 @@ const App = () => {
         </div>
       </div>
 
-      <div className={styles.module}>
+      {/* <div className={styles.module}>
         <h2 className={styles.heading}>设置</h2>
 
         <Spacer axis="vertical" size={12} />
@@ -231,7 +231,7 @@ const App = () => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       <div className={styles.module}>
         <h2 className={styles.heading}>预览</h2>
